@@ -1,0 +1,1558 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>互动故事启动器</title>
+  <style>
+    :root {
+      --bg: #101216;
+      --panel: #191d24;
+      --panel-2: #222833;
+      --text: #f2efe7;
+      --muted: #a9adba;
+      --accent: #d89b5f;
+      --accent-2: #7aa0c4;
+      --border: #343b48;
+      --danger: #d56b6b;
+      --font-body: ui-serif, Georgia, serif;
+      --font-heading: ui-sans-serif, system-ui, sans-serif;
+      color-scheme: dark;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100svh;
+      background:
+        radial-gradient(circle at 50% 18%, color-mix(in srgb, var(--accent) 16%, transparent), transparent 30rem),
+        linear-gradient(180deg, color-mix(in srgb, var(--bg) 92%, #fff), var(--bg) 58%, #030405);
+      color: var(--text);
+      font-family: var(--font-body);
+      overflow: hidden;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    button {
+      border: 0;
+      background: color-mix(in srgb, var(--panel-2) 72%, transparent);
+      color: var(--text);
+      padding: .72rem .9rem;
+      cursor: pointer;
+      border-radius: 6px;
+      text-align: center;
+    }
+
+    button:hover {
+      background: color-mix(in srgb, var(--panel-2) 82%, var(--accent));
+    }
+
+    .app {
+      width: min(1140px, 100vw);
+      min-height: 100svh;
+      margin: 0 auto;
+      padding: clamp(12px, 2.2vw, 24px);
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr);
+      gap: clamp(8px, 1.6vw, 14px);
+    }
+
+    body.has-story .app {
+      padding-top: clamp(8px, 1.4vw, 18px);
+      gap: 6px;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: center;
+      font-family: var(--font-heading);
+      min-height: 54px;
+    }
+
+    body.has-story .topbar {
+      min-height: 40px;
+    }
+
+    .kicker {
+      color: var(--accent);
+      font-size: .75rem;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    body.has-story .kicker {
+      font-size: .68rem;
+      margin-bottom: 4px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(1.2rem, 3vw, 2rem);
+      line-height: 1.05;
+      letter-spacing: 0;
+      max-width: 780px;
+    }
+
+    .meta {
+      color: var(--muted);
+      margin-top: 6px;
+      line-height: 1.55;
+      max-width: 760px;
+      font-size: .94rem;
+    }
+
+    body.has-story .meta {
+      display: none;
+    }
+
+    .tools {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+
+    .file-label {
+      display: inline-flex;
+      align-items: center;
+      border: 0;
+      color: var(--bg);
+      background: var(--accent);
+      padding: .72rem .9rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-family: var(--font-heading);
+      white-space: nowrap;
+    }
+
+    .file-label input { display: none; }
+
+    .grid {
+      min-height: 0;
+      display: grid;
+      grid-template-columns: 30px 40px minmax(0, 900px);
+      align-items: center;
+      justify-content: center;
+      gap: clamp(6px, 1.3vw, 14px);
+      padding-bottom: 112px;
+    }
+
+    body:not(.has-story) .grid {
+      grid-template-columns: minmax(0, 900px);
+    }
+
+    .latest-jump {
+      justify-self: end;
+      width: 1.4rem;
+      padding: .2rem 0;
+      border-radius: 0;
+      background: transparent;
+      color: var(--muted);
+      font-family: var(--font-heading);
+      font-size: .72rem;
+      line-height: 1.12;
+      writing-mode: vertical-rl;
+      text-orientation: upright;
+      letter-spacing: 0;
+    }
+
+    .latest-jump:hover {
+      background: transparent;
+      color: var(--accent);
+    }
+
+    .latest-jump.inactive {
+      display: block !important;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    body:not(.has-story) .latest-jump {
+      display: none !important;
+    }
+
+    body.has-story.can-page-advance .reader,
+    body.has-story.can-page-advance .grid {
+      cursor: pointer;
+    }
+
+    .history-nav {
+      height: min(700px, calc(100svh - 178px));
+      min-height: 430px;
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr) auto;
+      justify-items: center;
+      align-items: center;
+      background: transparent;
+      color: var(--muted);
+      font-family: var(--font-heading);
+    }
+
+    body:not(.has-story) .history-nav {
+      display: none;
+    }
+
+    .page-jump {
+      width: 100%;
+      padding: .28rem 0;
+      border-radius: 0;
+      background: transparent;
+      color: var(--muted);
+      font-size: .72rem;
+      line-height: 1.2;
+    }
+
+    .page-jump:hover:not(:disabled) {
+      background: transparent;
+      color: var(--accent);
+    }
+
+    .page-jump:disabled {
+      cursor: default;
+      opacity: .3;
+    }
+
+    .timeline {
+      width: 100%;
+      min-height: 0;
+      padding: 12px 0;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      scrollbar-width: none;
+    }
+
+    .timeline::before {
+      content: "";
+      margin-top: auto;
+    }
+
+    .timeline::-webkit-scrollbar {
+      display: none;
+    }
+
+    .page-dot {
+      width: 9px;
+      height: 9px;
+      min-height: 9px;
+      padding: 0;
+      border-radius: 50%;
+      background: color-mix(in srgb, var(--muted) 62%, transparent);
+      opacity: .52;
+    }
+
+    .page-dot:hover {
+      background: var(--accent);
+      opacity: .86;
+    }
+
+    .page-dot.current {
+      width: 13px;
+      height: 13px;
+      min-height: 13px;
+      background: var(--accent);
+      opacity: 1;
+    }
+
+    .reader {
+      background: transparent;
+      border-radius: 0;
+      box-shadow: none;
+    }
+
+    .reader {
+      width: 100%;
+      height: min(700px, calc(100svh - 178px));
+      min-height: 430px;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      overflow: hidden;
+      backdrop-filter: none;
+    }
+
+    .scene {
+      padding: 12px 22px 8px;
+      background: transparent;
+      font-family: var(--font-heading);
+      text-align: center;
+    }
+
+    .scene-title {
+      font-weight: 700;
+      font-size: .98rem;
+    }
+
+    .scene-desc {
+      color: var(--muted);
+      font-size: .82rem;
+      line-height: 1.5;
+      margin-top: 6px;
+      max-width: 660px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .story {
+      min-height: 0;
+      padding: clamp(22px, 4vw, 46px) clamp(30px, 5vw, 64px);
+      font-size: clamp(1.04rem, 1.6vw, 1.24rem);
+      line-height: 1.88;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      overflow: auto;
+      text-align: left;
+    }
+
+    .segment {
+      margin: 0 0 1.2rem;
+    }
+
+    .segment.speech {
+      margin: .18rem 0 1.42rem;
+    }
+
+    .speaker {
+      display: inline-flex;
+      color: currentColor;
+      font-family: var(--font-heading);
+      font-size: .92em;
+      font-weight: 700;
+      line-height: 1.25;
+      margin: 0 0 .42rem 1.15em;
+      padding: 0;
+      letter-spacing: 0;
+    }
+
+    .speaker::before {
+      content: "//";
+      margin-right: .48em;
+      font-weight: 400;
+    }
+
+    .speaker::after {
+      content: "//";
+      margin-left: .48em;
+      font-weight: 400;
+    }
+
+    .speech-text {
+      display: block;
+      color: var(--text);
+      font-family: var(--font-body);
+      font-size: 1em;
+      line-height: 1.92;
+      max-width: 92%;
+      margin-left: 2em;
+      padding-left: 1.15em;
+      text-indent: 0;
+      position: relative;
+    }
+
+    .speech-text::before {
+      content: "“";
+      color: currentColor;
+      margin-left: -1.12em;
+      margin-right: .12em;
+    }
+
+    .speech-text::after {
+      content: "”";
+      color: currentColor;
+    }
+
+    .choices {
+      display: grid;
+      gap: 8px;
+      padding: 10px clamp(18px, 4vw, 40px) 28px;
+      background: transparent;
+    }
+
+    .choice {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      align-items: center;
+      width: min(620px, 100%);
+      margin: 0 auto;
+      text-align: center;
+      background: transparent;
+    }
+
+    .choice:hover {
+      background: transparent;
+      color: var(--accent);
+    }
+
+    .choice:disabled {
+      cursor: default;
+      color: var(--muted);
+      opacity: .54;
+    }
+
+    .choice:disabled:hover {
+      color: var(--muted);
+    }
+
+    .choice.selected-readonly {
+      color: var(--accent);
+      opacity: .9;
+    }
+
+    .choice.paced-continue::after {
+      content: "";
+    }
+
+    .choice::after {
+      content: "›";
+      color: var(--accent);
+      font-family: var(--font-heading);
+    }
+
+    .codex-section {
+      cursor: pointer;
+      min-width: 0;
+    }
+
+    .codex-section:hover .panel-title,
+    .codex-section:hover .chip {
+      color: var(--accent);
+    }
+
+    .choice:disabled::after {
+      content: "";
+    }
+
+    .side {
+      position: fixed;
+      left: 50%;
+      bottom: 10px;
+      transform: translateX(-50%);
+      width: min(900px, calc(100vw - 32px));
+      background: transparent;
+      border-radius: 0;
+      box-shadow: none;
+      backdrop-filter: none;
+      padding: 6px 12px;
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr);
+      gap: 10px;
+      align-items: center;
+      font-family: var(--font-heading);
+    }
+
+    .side section:nth-child(2),
+    .side section:nth-child(3) {
+      display: none;
+    }
+
+    .panel-title {
+      font-family: var(--font-heading);
+      color: var(--accent);
+      font-size: .66rem;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      margin-bottom: 4px;
+    }
+
+    .status-value {
+      font-family: var(--font-heading);
+      font-size: 1.2rem;
+      line-height: 1;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      max-height: 4.9rem;
+      overflow-y: auto;
+      scrollbar-width: none;
+    }
+
+    .chips::-webkit-scrollbar {
+      display: none;
+    }
+
+    .chip {
+      background: transparent;
+      color: var(--muted);
+      padding: .16rem .2rem;
+      border-radius: 0;
+      font-size: .78rem;
+      font-family: var(--font-heading);
+      max-width: min(220px, 27vw);
+      overflow: visible;
+      white-space: normal;
+      text-align: left;
+      line-height: 1.3;
+    }
+
+    .chip.empty {
+      cursor: default;
+    }
+
+    .chip.empty:hover {
+      color: var(--muted);
+    }
+
+    .modal-layer {
+      position: fixed;
+      inset: 0;
+      z-index: 10;
+      display: grid;
+      place-items: center;
+      padding: clamp(18px, 4vw, 44px);
+      background: color-mix(in srgb, #000 44%, transparent);
+      color: var(--text);
+      font-family: var(--font-heading);
+    }
+
+    .codex-modal {
+      width: min(560px, calc(100vw - 36px));
+      max-height: min(72svh, 620px);
+      overflow: hidden;
+      display: grid;
+      grid-template-rows: auto auto minmax(0, 1fr);
+      background: color-mix(in srgb, var(--panel) 94%, #000);
+      box-shadow: 0 24px 90px rgba(0, 0, 0, .46);
+      padding: clamp(18px, 3vw, 28px);
+      text-align: left;
+    }
+
+    .modal-close {
+      justify-self: end;
+      padding: 0;
+      background: transparent;
+      color: var(--muted);
+      border-radius: 0;
+      font-size: .82rem;
+    }
+
+    .modal-close:hover {
+      background: transparent;
+      color: var(--accent);
+    }
+
+    .modal-title {
+      margin: .14rem 0 1rem;
+      font-family: var(--font-heading);
+      font-size: clamp(1.18rem, 3vw, 1.7rem);
+      line-height: 1.18;
+    }
+
+    .modal-list {
+      min-height: 0;
+      overflow-y: auto;
+      display: grid;
+      gap: 12px;
+      padding-right: 4px;
+      scrollbar-width: thin;
+    }
+
+    .modal-row {
+      display: grid;
+      gap: 4px;
+      padding: 0 0 12px;
+      box-shadow: 0 1px 0 color-mix(in srgb, var(--muted) 22%, transparent);
+    }
+
+    .modal-row:last-child {
+      box-shadow: none;
+      padding-bottom: 0;
+    }
+
+    .modal-row-title {
+      font-size: .96rem;
+      line-height: 1.35;
+      color: var(--text);
+    }
+
+    .modal-row-body {
+      margin: 0;
+      color: var(--muted);
+      font-size: .88rem;
+      line-height: 1.62;
+    }
+
+    .ending {
+      padding-left: 0;
+    }
+
+    .notice {
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .hidden { display: none !important; }
+
+    @media (max-width: 860px) {
+      body { overflow: auto; }
+      .app {
+        min-height: 100svh;
+        padding-bottom: 96px;
+      }
+      .topbar {
+        align-items: flex-start;
+      }
+      .tools {
+        gap: 6px;
+      }
+      .file-label,
+      button {
+        padding: .62rem .72rem;
+        font-size: .9rem;
+      }
+      .grid {
+        padding-bottom: 84px;
+        grid-template-columns: 22px 32px minmax(0, 1fr);
+        gap: 6px;
+      }
+      body:not(.has-story) .grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+      .history-nav {
+        height: calc(100svh - 190px);
+        min-height: 360px;
+      }
+      .latest-jump {
+        width: 1.1rem;
+        padding: .2rem 0;
+        font-size: .64rem;
+      }
+      .page-jump {
+        font-size: .68rem;
+        padding: .28rem 0;
+      }
+      .page-dot {
+        width: 9px;
+        height: 9px;
+        min-height: 9px;
+        padding: 0;
+        font-size: 0;
+      }
+      .page-dot.current {
+        width: 13px;
+        height: 13px;
+        min-height: 13px;
+      }
+      .reader {
+        width: 100%;
+        height: auto;
+        min-height: calc(100svh - 190px);
+      }
+      .story {
+        padding: 22px 18px;
+        font-size: 1.05rem;
+        justify-content: flex-start;
+      }
+      .speaker {
+        margin-left: .55em;
+      }
+      .speech-text {
+        max-width: 100%;
+        margin-left: 1em;
+        padding-left: .9em;
+      }
+      .scene-desc {
+        display: none;
+      }
+      .side {
+        width: calc(100vw - 24px);
+        grid-template-columns: auto repeat(3, minmax(0, 1fr));
+        border-radius: 0;
+        bottom: 10px;
+      }
+      .chips {
+        max-height: 2.6rem;
+        gap: 3px;
+      }
+      .chip {
+        font-size: .7rem;
+        max-width: 100%;
+      }
+      .modal-layer {
+        padding: 16px;
+        align-items: center;
+      }
+      .codex-modal {
+        width: 100%;
+        max-height: 78svh;
+        padding: 18px;
+      }
+      .side section:nth-child(n+4) {
+        display: block;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <div>
+        <div class="kicker" id="mode">加载故事 JSON</div>
+        <h1 id="title">互动故事启动器</h1>
+        <div class="meta" id="description">一个干净、可主题化的分支叙事阅读器。</div>
+      </div>
+      <div class="tools">
+        <label class="file-label">
+          加载 JSON
+          <input id="file" type="file" accept=".json,application/json">
+        </label>
+        <button id="restart" type="button">重新开始</button>
+      </div>
+    </header>
+
+    <section class="grid">
+      <button class="latest-jump inactive" id="historyLatest" type="button">回到最新页</button>
+
+      <nav class="history-nav" aria-label="页面历史">
+        <button class="page-jump" id="historyPrev" type="button">上一页</button>
+        <div class="timeline" id="historyDots"></div>
+        <button class="page-jump" id="historyNext" type="button">下一页</button>
+      </nav>
+
+      <article class="reader">
+        <div class="scene">
+          <div class="scene-title" id="sceneTitle">未加载故事</div>
+          <div class="scene-desc" id="sceneDesc">导入由 Interactive Story Builder 生成的 JSON 文件。</div>
+        </div>
+        <div class="story" id="story">
+          <p class="notice">这个模板不包含第三方可见品牌或默认样例故事。你可以加载自己的故事 JSON，或生成独立 HTML。</p>
+        </div>
+        <div class="choices" id="choices"></div>
+      </article>
+
+      <aside class="side">
+        <section>
+          <div class="panel-title" id="valueName">状态</div>
+          <div class="status-value" id="value">0</div>
+        </section>
+        <section>
+          <div class="panel-title">目标</div>
+          <div class="notice" id="objective">未设置。</div>
+        </section>
+        <section>
+          <div class="panel-title">风险</div>
+          <div class="notice" id="stakes">未设置。</div>
+        </section>
+        <section class="codex-section" data-codex-kind="flags" role="button" tabindex="0">
+          <div class="panel-title">路线状态</div>
+          <div class="chips" id="flags"></div>
+        </section>
+        <section class="codex-section" data-codex-kind="clues" role="button" tabindex="0">
+          <div class="panel-title">线索</div>
+          <div class="chips" id="clues"></div>
+        </section>
+        <section class="codex-section" data-codex-kind="items" role="button" tabindex="0">
+          <div class="panel-title">物品</div>
+          <div class="chips" id="items"></div>
+        </section>
+      </aside>
+    </section>
+  </main>
+
+  <div class="modal-layer hidden" id="codexModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <section class="codex-modal">
+      <button class="modal-close" id="modalClose" type="button">关闭</button>
+      <div class="panel-title" id="modalType">详情</div>
+      <h2 class="modal-title" id="modalTitle"></h2>
+      <div class="modal-list" id="modalList"></div>
+    </section>
+  </div>
+
+  <script>
+    "use strict";
+
+    const PRESETS = {
+      "investigation-dossier": {
+        bg: "#15120f", panel: "#211d18", panel2: "#30291f", text: "#f2ead8",
+        muted: "#b9ac97", accent: "#d0a15e", accent2: "#7f9aa7",
+        heading: "ui-sans-serif, system-ui, sans-serif", body: "ui-serif, Georgia, serif"
+      },
+      "campus-summer": {
+        bg: "#f6f1df", panel: "#fffaf0", panel2: "#e8f1e2", text: "#243026",
+        muted: "#65705f", accent: "#3c8c6e", accent2: "#cf7b43",
+        heading: "ui-sans-serif, system-ui, sans-serif", body: "ui-sans-serif, system-ui, sans-serif"
+      },
+      "cyber-terminal": {
+        bg: "#070b10", panel: "#101821", panel2: "#142432", text: "#d7ffe9",
+        muted: "#86a6a6", accent: "#58f0b7", accent2: "#ff5f9a",
+        heading: "ui-monospace, SFMono-Regular, Menlo, monospace", body: "ui-monospace, SFMono-Regular, Menlo, monospace"
+      },
+      "horror-house": {
+        bg: "#0c0a0a", panel: "#171313", panel2: "#24191a", text: "#efe7dc",
+        muted: "#a3958b", accent: "#ba3d35", accent2: "#9d8b6f",
+        heading: "ui-serif, Georgia, serif", body: "ui-serif, Georgia, serif"
+      },
+      "romance-visual-novel": {
+        bg: "#fff3f7", panel: "#fffafd", panel2: "#f4e2ea", text: "#382530",
+        muted: "#806774", accent: "#cf638e", accent2: "#8267c7",
+        heading: "ui-sans-serif, system-ui, sans-serif", body: "ui-sans-serif, system-ui, sans-serif"
+      },
+      "wuxia-road": {
+        bg: "#ebe4d2", panel: "#f6f0df", panel2: "#ddd2b8", text: "#282116",
+        muted: "#6c604e", accent: "#9a3f2d", accent2: "#3f6654",
+        heading: "ui-serif, Georgia, serif", body: "ui-serif, Georgia, serif"
+      },
+      "fairy-tale-dark": {
+        bg: "#101014", panel: "#1b1823", panel2: "#272035", text: "#f5ead7",
+        muted: "#b7a7bd", accent: "#d9b35f", accent2: "#78b890",
+        heading: "ui-serif, Georgia, serif", body: "ui-serif, Georgia, serif"
+      },
+      "absurd-office": {
+        bg: "#ededdf", panel: "#faf9ed", panel2: "#d7d9c8", text: "#282922",
+        muted: "#6c6f60", accent: "#355f9a", accent2: "#ad5c3b",
+        heading: "ui-sans-serif, system-ui, sans-serif", body: "ui-sans-serif, system-ui, sans-serif"
+      }
+    };
+
+    const DECISION_WINDOW_SIZE = 10;
+    const MAX_DECISIONS_PER_WINDOW = 5;
+    const MAX_CONSECUTIVE_DECISION_PAGES = 2;
+    const CODEX_LABELS = {
+      flags: "路线状态",
+      clues: "线索",
+      items: "物品"
+    };
+
+    const state = {
+      story: null,
+      nodeId: "",
+      val: 0,
+      vars: {},
+      flags: new Set(),
+      marks: new Set(),
+      clues: new Set(),
+      items: new Set(),
+      relationships: {},
+      achievements: new Set(),
+      history: [],
+      viewIndex: -1,
+      pageAdvance: null,
+      dynamicLabels: { flags: {}, clues: {}, items: {} }
+    };
+
+    const el = {
+      file: document.getElementById("file"),
+      restart: document.getElementById("restart"),
+      mode: document.getElementById("mode"),
+      title: document.getElementById("title"),
+      description: document.getElementById("description"),
+      sceneTitle: document.getElementById("sceneTitle"),
+      sceneDesc: document.getElementById("sceneDesc"),
+      story: document.getElementById("story"),
+      choices: document.getElementById("choices"),
+      historyLatest: document.getElementById("historyLatest"),
+      historyPrev: document.getElementById("historyPrev"),
+      historyNext: document.getElementById("historyNext"),
+      historyDots: document.getElementById("historyDots"),
+      modal: document.getElementById("codexModal"),
+      modalClose: document.getElementById("modalClose"),
+      modalType: document.getElementById("modalType"),
+      modalTitle: document.getElementById("modalTitle"),
+      modalList: document.getElementById("modalList"),
+      valueName: document.getElementById("valueName"),
+      value: document.getElementById("value"),
+      objective: document.getElementById("objective"),
+      stakes: document.getElementById("stakes"),
+      flags: document.getElementById("flags"),
+      clues: document.getElementById("clues"),
+      items: document.getElementById("items")
+    };
+
+    function loadStory(story) {
+      assertStory(story);
+      document.body.classList.add("has-story");
+      state.story = story;
+      state.nodeId = story.startNodeId;
+      state.val = Number(story.meta.initialVariable || 0);
+      state.vars = structuredClone(story.variables || {});
+      state.flags = new Set();
+      state.marks = new Set();
+      state.clues = new Set();
+      state.items = new Set();
+      state.relationships = {};
+      state.achievements = new Set();
+      state.history = [];
+      state.viewIndex = -1;
+      state.pageAdvance = null;
+      state.dynamicLabels = { flags: {}, clues: {}, items: {} };
+      applyTheme(story.meta);
+      renderMeta();
+      hideCodexModal();
+      renderNode(state.nodeId);
+    }
+
+    function assertStory(story) {
+      if (!story || typeof story !== "object") throw new Error("故事必须是 JSON 对象。");
+      if (!story.meta || !story.meta.title) throw new Error("故事缺少 meta.title。");
+      if (!story.startNodeId || !story.nodes?.[story.startNodeId]) throw new Error("startNodeId 无效。");
+    }
+
+    function applyTheme(meta) {
+      const preset = PRESETS[meta.themePack] || PRESETS[meta.theme] || PRESETS["investigation-dossier"];
+      const custom = Object.fromEntries(
+        Object.entries(normalizeTheme(meta.themePackData || {})).filter(([, value]) => Boolean(value))
+      );
+      const theme = { ...preset, ...custom };
+      const root = document.documentElement.style;
+      root.setProperty("--bg", theme.bg);
+      root.setProperty("--panel", theme.panel);
+      root.setProperty("--panel-2", theme.panel2);
+      root.setProperty("--text", theme.text);
+      root.setProperty("--muted", theme.muted);
+      root.setProperty("--accent", theme.accent);
+      root.setProperty("--accent-2", theme.accent2);
+      root.setProperty("--font-heading", theme.heading);
+      root.setProperty("--font-body", theme.body);
+    }
+
+    function normalizeTheme(input) {
+      const visual = input.visual || {};
+      const typography = input.typography || {};
+      const palette = visual.palette || input.palette || [];
+      return {
+        bg: input.bg || palette[0],
+        panel: input.panel || palette[1],
+        panel2: input.panel2 || palette[2],
+        text: input.text || palette[3],
+        muted: input.muted,
+        accent: input.accent || palette[4],
+        accent2: input.accent2 || palette[5],
+        heading: input.heading || typography.heading,
+        body: input.body || typography.body
+      };
+    }
+
+    function renderMeta() {
+      const meta = state.story.meta;
+      document.title = meta.title;
+      el.mode.textContent = `${meta.mode || "story"} / ${meta.themePack || meta.theme || "custom"}`;
+      el.title.textContent = meta.title;
+      el.description.textContent = meta.description || "";
+      el.valueName.textContent = meta.variableName || "Value";
+      el.objective.textContent = meta.objective || "未设置。";
+      el.stakes.textContent = meta.stakes || "未设置。";
+      updateSidePanel();
+    }
+
+    function renderNode(id) {
+      const node = state.story.nodes[id];
+      if (!node) return renderError(`Missing node: ${id}`);
+      state.nodeId = id;
+      if (node.routes && !node.choices) {
+        const route = node.routes.find(item => check(item.condition)) || node.routes.find(item => item.condition === "default");
+        if (route) return renderNode(route.next);
+      }
+      if (node.isEnding && node.achievement) state.achievements.add(node.achievement);
+      const entry = createHistoryEntry(id, node);
+      state.history.push(entry);
+      state.viewIndex = state.history.length - 1;
+      renderHistoryEntry(entry, true);
+    }
+
+    function createHistoryEntry(id, node) {
+      const scene = normalizeScene(node.scene);
+      const availableChoices = node.input ? [] : collectAvailableChoices(node);
+      const isDecisionPage = Boolean(node.input) || shouldOfferDecision(availableChoices);
+      const entry = {
+        id,
+        sceneTitle: node.chapterTitle || node.title || scene.name || id,
+        sceneDesc: [scene.name, scene.description, scene.arrival].filter(Boolean).join(" / "),
+        segments: cloneSegments(node.segments || []),
+        choices: [],
+        input: null,
+        ending: null,
+        isDecisionPage,
+        selectedChoice: "",
+        snapshot: snapshotState()
+      };
+      if (node.isEnding) {
+        entry.ending = {
+          title: node.title || "结局",
+          type: node.type || "结局",
+          description: node.description || "",
+          closing: node.closing || ""
+        };
+      } else if (node.input) {
+        entry.input = {
+          placeholder: node.input.placeholder || "输入答案",
+          label: node.input.label || "确认"
+        };
+      } else {
+        entry.choices = availableChoices.map(choice => ({ text: choice.text || "继续" }));
+      }
+      return entry;
+    }
+
+    function cloneSegments(segments) {
+      return segments.map(segment => {
+        if (typeof segment === "string") return segment;
+        return { ...segment };
+      });
+    }
+
+    function snapshotState() {
+      return {
+        val: state.val,
+        flags: [...state.marks],
+        clues: [...state.clues],
+        items: [...state.items]
+      };
+    }
+
+    function renderHistoryEntry(entry, isLive) {
+      state.pageAdvance = null;
+      el.sceneTitle.textContent = entry.sceneTitle;
+      el.sceneDesc.textContent = entry.sceneDesc;
+      if (entry.ending) {
+        renderEndingEntry(entry, isLive);
+      } else {
+        renderSegments(entry.segments || []);
+        if (isLive) {
+          renderChoices(state.story.nodes[entry.id], entry);
+        } else {
+          renderLockedChoices(entry);
+        }
+      }
+      updateSidePanel(entry.snapshot);
+      renderHistoryNav();
+      updatePageAdvanceHint();
+    }
+
+    function collectAvailableChoices(node) {
+      const choices = (node.choices || []).filter(choice => check(choice.condition));
+      if (!choices.length && node.next) choices.push({ text: "继续", next: node.next });
+      return choices;
+    }
+
+    function shouldOfferDecision(choices) {
+      if (choices.length <= 1) return false;
+      const windowSize = Number(state.story?.meta?.decisionPacing?.windowSize || DECISION_WINDOW_SIZE);
+      const maxDecisions = Number(state.story?.meta?.decisionPacing?.maxDecisionPages || MAX_DECISIONS_PER_WINDOW);
+      const maxConsecutive = Number(state.story?.meta?.decisionPacing?.maxConsecutiveDecisionPages || MAX_CONSECUTIVE_DECISION_PAGES);
+      const recent = state.history.slice(-Math.max(0, windowSize - 1));
+      const recentDecisionCount = recent.filter(entry => entry.isDecisionPage).length;
+      const consecutiveDecisionCount = countRecentDecisionStreak();
+      return recentDecisionCount < maxDecisions && consecutiveDecisionCount < maxConsecutive;
+    }
+
+    function countRecentDecisionStreak() {
+      let count = 0;
+      for (let index = state.history.length - 1; index >= 0; index -= 1) {
+        if (!state.history[index].isDecisionPage) break;
+        count += 1;
+      }
+      return count;
+    }
+
+    function showHistoryPage(index) {
+      if (!state.history.length) return;
+      state.viewIndex = clamp(Number(index), 0, state.history.length - 1);
+      renderHistoryEntry(state.history[state.viewIndex], isLiveView());
+    }
+
+    function isLiveView() {
+      return state.viewIndex === state.history.length - 1;
+    }
+
+    function renderHistoryNav() {
+      el.historyDots.innerHTML = "";
+      for (let index = 0; index < state.history.length; index += 1) {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = `page-dot${index === state.viewIndex ? " current" : ""}`;
+        button.setAttribute("aria-label", `第 ${index + 1} 页`);
+        button.title = `第 ${index + 1} 页`;
+        button.addEventListener("click", () => showHistoryPage(index));
+        el.historyDots.appendChild(button);
+      }
+      el.historyPrev.disabled = state.viewIndex <= 0;
+      el.historyNext.disabled = state.viewIndex < 0 || state.viewIndex >= state.history.length - 1;
+      el.historyLatest.classList.toggle("inactive", isLiveView() || state.viewIndex < 0);
+      requestAnimationFrame(() => {
+        el.historyDots.querySelector(".current")?.scrollIntoView({ block: "end", inline: "nearest" });
+      });
+    }
+
+    function canAdvanceByClick() {
+      if (!state.story || !state.history.length) return false;
+      if (!isLiveView()) return state.viewIndex < state.history.length - 1;
+      return typeof state.pageAdvance === "function";
+    }
+
+    function updatePageAdvanceHint() {
+      document.body.classList.toggle("can-page-advance", canAdvanceByClick());
+    }
+
+    function shouldIgnorePageClick(event) {
+      const target = event.target;
+      if (!(target instanceof Element)) return true;
+      const selection = window.getSelection?.();
+      if (selection && !selection.isCollapsed && selection.toString().trim()) return true;
+      return Boolean(target.closest(
+        "button, input, textarea, select, label, a, .topbar, .history-nav, .latest-jump, .side, .modal-layer"
+      ));
+    }
+
+    function advanceByPageClick() {
+      if (!canAdvanceByClick()) return;
+      if (!isLiveView()) {
+        showHistoryPage(state.viewIndex + 1);
+        return;
+      }
+      state.pageAdvance();
+    }
+
+    function normalizeScene(scene) {
+      if (typeof scene === "string") return { name: scene };
+      return scene || {};
+    }
+
+    function renderSegments(segments) {
+      el.story.innerHTML = "";
+      if (!segments.length) {
+        el.story.innerHTML = `<p class="notice">这个节点没有正文。</p>`;
+        return;
+      }
+      for (const seg of segments) {
+        const p = document.createElement("p");
+        p.className = "segment";
+        if (seg.speaker) {
+          p.classList.add("speech");
+          const speaker = document.createElement("span");
+          speaker.className = "speaker";
+          speaker.textContent = formatSpeakerName(seg.speaker);
+          p.appendChild(speaker);
+          const text = document.createElement("span");
+          text.className = "speech-text";
+          text.append(document.createTextNode(normalizeSpeechText(seg.text || String(seg))));
+          p.appendChild(text);
+        } else {
+          p.append(document.createTextNode(seg.text || String(seg)));
+        }
+        el.story.appendChild(p);
+      }
+    }
+
+    function formatSpeakerName(name) {
+      return String(name || "").trim().replace(/[:：]+$/, "");
+    }
+
+    function normalizeSpeechText(text) {
+      return String(text || "").trim().replace(/^["“]+/, "").replace(/["”]+$/, "");
+    }
+
+    function renderChoices(node, entry) {
+      el.choices.innerHTML = "";
+      state.pageAdvance = null;
+      if (node.input) {
+        renderInput(node.input);
+        return;
+      }
+      const choices = collectAvailableChoices(node);
+      if (!choices.length) {
+        el.choices.innerHTML = `<p class="notice">没有可用选项。</p>`;
+        return;
+      }
+      if (!entry.isDecisionPage && choices.length > 1) {
+        const button = document.createElement("button");
+        const advance = () => choose(choices[0], "继续");
+        state.pageAdvance = advance;
+        button.type = "button";
+        button.className = "choice paced-continue";
+        button.textContent = "继续";
+        button.addEventListener("click", advance);
+        el.choices.appendChild(button);
+        return;
+      }
+      for (const choice of choices) {
+        const advance = () => choose(choice);
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "choice";
+        button.textContent = choice.text || "继续";
+        if (choices.length === 1) state.pageAdvance = advance;
+        button.addEventListener("click", advance);
+        el.choices.appendChild(button);
+      }
+      updatePageAdvanceHint();
+    }
+
+    function renderLockedChoices(entry) {
+      el.choices.innerHTML = "";
+      if (entry.input) {
+        const wrap = document.createElement("div");
+        wrap.className = "choice";
+        const field = document.createElement("input");
+        field.type = "text";
+        field.placeholder = entry.input.placeholder;
+        field.disabled = true;
+        field.style.width = "100%";
+        field.style.padding = ".72rem";
+        field.style.border = "0";
+        field.style.borderRadius = "6px";
+        field.style.background = "transparent";
+        field.style.color = "var(--muted)";
+        const button = document.createElement("button");
+        button.type = "button";
+        button.textContent = entry.selectedChoice || entry.input.label;
+        button.disabled = true;
+        button.style.background = "transparent";
+        wrap.append(field, button);
+        el.choices.appendChild(wrap);
+        return;
+      }
+      if (!entry.choices.length) return;
+      if (!entry.isDecisionPage) {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "choice paced-continue";
+        button.textContent = entry.selectedChoice || "继续";
+        button.disabled = true;
+        el.choices.appendChild(button);
+        return;
+      }
+      for (const choice of entry.choices) {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = `choice${choice.text === entry.selectedChoice ? " selected-readonly" : ""}`;
+        button.textContent = choice.text;
+        button.disabled = true;
+        el.choices.appendChild(button);
+      }
+    }
+
+    function renderInput(input) {
+      state.pageAdvance = null;
+      const wrap = document.createElement("div");
+      wrap.className = "choice";
+      const field = document.createElement("input");
+      field.type = "text";
+      field.placeholder = input.placeholder || "输入答案";
+      field.style.width = "100%";
+      field.style.padding = ".72rem";
+      field.style.border = "0";
+      field.style.borderRadius = "6px";
+      field.style.background = "transparent";
+      field.style.color = "var(--text)";
+      const button = document.createElement("button");
+      button.type = "button";
+      button.textContent = input.label || "确认";
+      button.addEventListener("click", () => {
+        if (!isLiveView()) return;
+        const answer = String(input.answer || "").trim().toLowerCase();
+        const value = field.value.trim().toLowerCase();
+        const active = state.history[state.viewIndex];
+        if (active) active.selectedChoice = input.label || "确认";
+        renderNode(value === answer ? input.success : input.failure);
+      });
+      wrap.append(field, button);
+      el.choices.appendChild(wrap);
+      updatePageAdvanceHint();
+    }
+
+    function choose(choice, displayText = "") {
+      if (!isLiveView()) return;
+      const active = state.history[state.viewIndex];
+      if (active) active.selectedChoice = displayText || choice.text || "继续";
+      applyChanges(choice.changes || {});
+      renderNode(choice.next);
+    }
+
+    function applyChanges(changes) {
+      if (typeof changes.val === "number") state.val = clamp(state.val + changes.val, 0, 100);
+      if (typeof changes.valSet === "number") state.val = clamp(changes.valSet, 0, 100);
+      if (changes.set && typeof changes.set === "object") Object.assign(state.vars, changes.set);
+      addMaybe(state.flags, changes.addFlag);
+      addImportantFlag(changes.importantFlag);
+      if (Array.isArray(changes.addFlags)) changes.addFlags.forEach(item => addMaybe(state.flags, item));
+      if (Array.isArray(changes.importantFlags)) changes.importantFlags.forEach(item => addImportantFlag(item));
+      if (changes.removeFlag) {
+        const id = flagId(changes.removeFlag);
+        state.flags.delete(id);
+        state.marks.delete(id);
+      }
+      addMaybe(state.items, changes.addItem, "items");
+      if (changes.removeItem) state.items.delete(flagId(changes.removeItem));
+      addMaybe(state.clues, changes.addClue, "clues");
+      addMaybe(state.achievements, changes.unlockAchievement);
+      if (Array.isArray(changes.unlockAchievements)) changes.unlockAchievements.forEach(item => addMaybe(state.achievements, item));
+      if (changes.relationship && typeof changes.relationship === "object") {
+        for (const [name, delta] of Object.entries(changes.relationship)) {
+          state.relationships[name] = (state.relationships[name] || 0) + Number(delta || 0);
+        }
+      }
+      if (typeof changes.time === "number") state.vars.time = (Number(state.vars.time || 0) + changes.time);
+    }
+
+    function addImportantFlag(value) {
+      const id = flagId(value);
+      if (!id) return;
+      state.flags.add(id);
+      state.marks.add(id);
+      const label = flagLabel(value);
+      if (label) state.dynamicLabels.flags[id] = label;
+    }
+
+    function addMaybe(set, value, kind = "") {
+      const id = flagId(value);
+      if (!id) return;
+      set.add(id);
+      const label = flagLabel(value);
+      if (kind && label) state.dynamicLabels[kind][id] = label;
+    }
+
+    function flagLabel(value) {
+      if (!value || typeof value === "string") return "";
+      return value.label || value.title || value.name || "";
+    }
+
+    function flagId(value) {
+      if (!value) return "";
+      if (typeof value === "string") return value;
+      return value.flag || value.id || value.name || "";
+    }
+
+    function check(condition) {
+      if (!condition || condition === "default") return true;
+      if (typeof condition === "object") {
+        if (Array.isArray(condition.all)) return condition.all.every(check);
+        if (Array.isArray(condition.any)) return condition.any.some(check);
+        if (condition.not) return !check(condition.not);
+        if (condition.flag) return state.flags.has(condition.flag);
+        if (condition.var) return compare(valueOf(condition.var), condition.op || "==", condition.value);
+      }
+      const text = String(condition).trim();
+      if (text === "default") return true;
+      const flag = text.match(/^(!)?hasFlag\s+['"]([^'"]+)['"]$/);
+      if (flag) return flag[1] ? !state.flags.has(flag[2]) : state.flags.has(flag[2]);
+      const compareMatch = text.match(/^([a-zA-Z_][\w]*)\s*(>=|<=|>|<|==|!=)\s*(.+)$/);
+      if (compareMatch) return compare(valueOf(compareMatch[1]), compareMatch[2], parseLiteral(compareMatch[3]));
+      return Boolean(valueOf(text));
+    }
+
+    function valueOf(key) {
+      if (key === "val") return state.val;
+      return state.vars[key];
+    }
+
+    function parseLiteral(raw) {
+      const text = String(raw).trim();
+      if (/^['"].*['"]$/.test(text)) return text.slice(1, -1);
+      if (text === "true") return true;
+      if (text === "false") return false;
+      if (!Number.isNaN(Number(text))) return Number(text);
+      return text;
+    }
+
+    function compare(left, op, right) {
+      if (op === ">=") return Number(left) >= Number(right);
+      if (op === "<=") return Number(left) <= Number(right);
+      if (op === ">") return Number(left) > Number(right);
+      if (op === "<") return Number(left) < Number(right);
+      if (op === "!=") return left != right;
+      return left == right;
+    }
+
+    function renderEndingEntry(entry, isLive) {
+      state.pageAdvance = null;
+      el.story.innerHTML = `
+        <div class="ending">
+          <div class="kicker">${escapeHtml(entry.ending.type)}</div>
+          <h2>${escapeHtml(entry.ending.title)}</h2>
+          <p>${escapeHtml(entry.ending.description)}</p>
+          <p>${escapeHtml(entry.ending.closing)}</p>
+        </div>`;
+      el.choices.innerHTML = "";
+      if (!isLive) return;
+      const restart = document.createElement("button");
+      restart.type = "button";
+      restart.textContent = "重新开始";
+      restart.addEventListener("click", restartStory);
+      el.choices.appendChild(restart);
+      updatePageAdvanceHint();
+    }
+
+    function updateSidePanel(snapshot = snapshotState()) {
+      el.value.textContent = Math.round(Number(snapshot.val || 0));
+      renderChips(el.flags, snapshot.flags || [], "flags");
+      renderChips(el.clues, snapshot.clues || [], "clues");
+      renderChips(el.items, snapshot.items || [], "items");
+    }
+
+    function renderChips(container, items, kind) {
+      container.innerHTML = "";
+      if (!items.length) {
+        const span = document.createElement("span");
+        span.className = "chip empty";
+        span.textContent = "无";
+        container.appendChild(span);
+        return;
+      }
+      for (const item of items) {
+        const entry = getCodexEntry(kind, item);
+        const span = document.createElement("span");
+        span.className = "chip";
+        span.textContent = entry.label;
+        span.title = entry.description ? `${entry.label}：${entry.description}` : entry.label;
+        container.appendChild(span);
+      }
+    }
+
+    function getCodexEntry(kind, id) {
+      const codex = state.story?.codex || {};
+      const singular = kind.endsWith("s") ? kind.slice(0, -1) : kind;
+      const raw = codex[kind]?.[id] || codex[singular]?.[id] || {};
+      if (typeof raw === "string") return { label: raw, description: "" };
+      const dynamicLabel = state.dynamicLabels?.[kind]?.[id];
+      const label = raw.label || raw.title || raw.name || dynamicLabel || fallbackLabel(id);
+      const description = raw.description || raw.text || raw.note || fallbackDescription(kind, label);
+      return { label, description };
+    }
+
+    function fallbackLabel(id) {
+      return String(id || "")
+        .replace(/[_-]+/g, " ")
+        .replace(/\b\w/g, char => char.toUpperCase());
+    }
+
+    function fallbackDescription(kind, label) {
+      if (kind === "flags") return `路线状态：${label}。它记录你已经做出的关键选择，会影响后续可见内容或结局。`;
+      if (kind === "clues") return `线索：${label}。它代表你已经发现的信息，后续判断可能会用到。`;
+      if (kind === "items") return `物品：${label}。它代表你当前路线里获得、携带或使用过的道具。`;
+      return "暂无详情。";
+    }
+
+    function showCodexModal(kind) {
+      const snapshot = state.history[state.viewIndex]?.snapshot || snapshotState();
+      const items = snapshot[kind] || [];
+      el.modalType.textContent = CODEX_LABELS[kind] || "详情";
+      el.modalTitle.textContent = CODEX_LABELS[kind] || "详情";
+      el.modalList.innerHTML = "";
+      if (!items.length) {
+        el.modalList.appendChild(createModalRow("暂无", "当前路线还没有记录这一类内容。"));
+      } else {
+        for (const item of items) {
+          const entry = getCodexEntry(kind, item);
+          el.modalList.appendChild(createModalRow(entry.label, entry.description));
+        }
+      }
+      el.modal.classList.remove("hidden");
+      el.modalClose.focus({ preventScroll: true });
+    }
+
+    function createModalRow(title, body) {
+      const row = document.createElement("div");
+      row.className = "modal-row";
+      const heading = document.createElement("div");
+      heading.className = "modal-row-title";
+      heading.textContent = title;
+      const text = document.createElement("p");
+      text.className = "modal-row-body";
+      text.textContent = body;
+      row.append(heading, text);
+      return row;
+    }
+
+    function hideCodexModal() {
+      el.modal.classList.add("hidden");
+      el.modalList.innerHTML = "";
+    }
+
+    function restartStory() {
+      if (state.story) loadStory(state.story);
+    }
+
+    function renderError(message) {
+      state.pageAdvance = null;
+      el.story.innerHTML = `<p class="notice">${escapeHtml(message)}</p>`;
+      el.choices.innerHTML = "";
+      renderHistoryNav();
+      updatePageAdvanceHint();
+    }
+
+    function clamp(value, min, max) {
+      return Math.max(min, Math.min(max, value));
+    }
+
+    function escapeHtml(text) {
+      return String(text).replace(/[&<>"']/g, char => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;"
+      }[char]));
+    }
+
+    el.file.addEventListener("change", async event => {
+      const file = event.target.files[0];
+      if (!file) return;
+      try {
+        loadStory(JSON.parse(await file.text()));
+      } catch (error) {
+        renderError(error.message);
+      } finally {
+        event.target.value = "";
+      }
+    });
+
+    el.restart.addEventListener("click", restartStory);
+    el.historyLatest.addEventListener("click", () => {
+      if (state.history.length) showHistoryPage(state.history.length - 1);
+    });
+    el.historyPrev.addEventListener("click", () => showHistoryPage(state.viewIndex - 1));
+    el.historyNext.addEventListener("click", () => showHistoryPage(state.viewIndex + 1));
+    el.modalClose.addEventListener("click", hideCodexModal);
+    el.modal.addEventListener("click", event => {
+      if (event.target === el.modal) hideCodexModal();
+    });
+    document.querySelectorAll(".codex-section").forEach(section => {
+      const open = () => showCodexModal(section.dataset.codexKind);
+      section.addEventListener("click", open);
+      section.addEventListener("keydown", event => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          open();
+        }
+      });
+    });
+    document.addEventListener("click", event => {
+      if (shouldIgnorePageClick(event)) return;
+      advanceByPageClick();
+    });
+    document.addEventListener("keydown", event => {
+      if (event.key === "Escape" && !el.modal.classList.contains("hidden")) {
+        hideCodexModal();
+      }
+    });
+
+    function loadEmbeddedStory() {
+      const embedded = document.getElementById("story-data");
+      if (window.STORY_DATA) {
+        loadStory(window.STORY_DATA);
+      } else if (embedded?.textContent?.trim()) {
+        try {
+          loadStory(JSON.parse(embedded.textContent));
+        } catch (error) {
+          renderError(error.message);
+        }
+      }
+    }
+
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", loadEmbeddedStory, { once: true });
+    } else {
+      setTimeout(loadEmbeddedStory, 0);
+    }
+  </script>
+</body>
+</html>

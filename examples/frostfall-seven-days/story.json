@@ -1,0 +1,2956 @@
+{
+  "schemaVersion": 2,
+  "meta": {
+    "title": "白霜七日",
+    "author": "Codex 示例",
+    "version": "1.0.0",
+    "description": "极寒末世中，避难站供暖核心濒临熄火，失联巡检队把一种会模仿人类的白霜带到了炉心下方。",
+    "mode": "standard",
+    "theme": "horror-house",
+    "themePack": "horror-house",
+    "prosePreset": "horror-house",
+    "playerRole": "十七号避难站热工主管沈砚",
+    "objective": "找到失联的供暖核心巡检队，并决定是否重启地下反应炉。",
+    "stakes": "如果反应炉在天亮前熄火，三千名避难者会在零下七十度的风暴里冻死。",
+    "mechanics": [
+      "clues",
+      "inventory",
+      "relationship",
+      "timePressure"
+    ],
+    "decisionPacing": {
+      "windowSize": 10,
+      "maxDecisionPages": 5,
+      "maxConsecutiveDecisionPages": 2
+    },
+    "themePackData": {
+      "visual": {
+        "palette": [
+          "#07090d",
+          "#121923",
+          "#1f2b36",
+          "#edf7ff",
+          "#8fd3ff",
+          "#d66b63"
+        ],
+        "background": "polar night, frost on glass, emergency red lamps",
+        "surface": "dark insulated panels, thin ice-blue borders",
+        "button": "hard-edged survival console choices",
+        "transition": "cold cuts, static, breath fade"
+      },
+      "typography": {
+        "heading": "ui-sans-serif, system-ui, sans-serif",
+        "body": "ui-serif, Georgia, serif",
+        "voice": "clear survival horror"
+      },
+      "prose": {
+        "preset": "horror-house",
+        "sentenceLength": "mixed",
+        "dialogue": "direct under pressure",
+        "avoid": [
+          "pure atmosphere",
+          "unclear monster rules",
+          "abstract choice labels"
+        ]
+      },
+      "launcher": {
+        "layout": "reader-with-side-panel",
+        "status": [
+          "bodyHeat",
+          "flags",
+          "clues",
+          "items"
+        ],
+        "choiceStyle": "compact-list",
+        "sceneTransition": "cold-cut"
+      }
+    },
+    "cover": {
+      "label": "WHITEOUT / DAY 7",
+      "tagline": "供暖核心还剩六小时。不要回答会说话的死人。"
+    },
+    "variableName": "体温",
+    "initialVariable": 58
+  },
+  "startNodeId": "start",
+  "variables": {
+    "time": 0,
+    "storm": "whiteout",
+    "stationPopulation": 3000
+  },
+  "achievements": {
+    "first_descent": {
+      "title": "第一次下行",
+      "description": "离开控制室，开始寻找巡检队。"
+    },
+    "truth_archive": {
+      "title": "共生档案",
+      "description": "找到白霜母体实验档案。"
+    },
+    "child_note": {
+      "title": "妈妈在炉下",
+      "description": "取得苏小禾的纸条或录音线索。"
+    },
+    "storm_beacon": {
+      "title": "风暴信标",
+      "description": "在室外点亮散热塔短波信标。"
+    },
+    "white_mother": {
+      "title": "白母",
+      "description": "见到霜巢育室中的母体。"
+    },
+    "ending_dawn": {
+      "title": "寒潮后的第一盏灯",
+      "description": "让居住环恢复供暖。"
+    },
+    "ending_coexistence": {
+      "title": "半暖冬眠",
+      "description": "达成双线共生。"
+    },
+    "ending_pyre": {
+      "title": "白焰清除",
+      "description": "执行热焚清除。"
+    },
+    "ending_exile": {
+      "title": "北方灯队",
+      "description": "启动全站疏散。"
+    },
+    "ending_core_sleeper": {
+      "title": "核心守夜人",
+      "description": "用自己的生命体征完成授权。"
+    },
+    "ending_white_city": {
+      "title": "白城上行",
+      "description": "让白霜抵达居住环。"
+    }
+  },
+  "codex": {
+    "clues": {
+      "0316": {
+        "label": "03:16 时刻",
+        "description": "巡检队生命体征同时归零的时间，也是多处日志开始互相矛盾的节点。"
+      },
+      "borrowed_names": {
+        "label": "借来的姓名",
+        "description": "白霜会借用死者或失踪者的名字，让人误以为熟人还活着。"
+      },
+      "child_note": {
+        "label": "苏小禾的纸条",
+        "description": "纸条写着妈妈在炉子下面唱歌，说明孩子们听见的呼唤并不只是幻觉。"
+      },
+      "child_song": {
+        "label": "孩子的歌声",
+        "description": "童声从下层管道传来，旋律和启动手册的提示音异常相似。"
+      },
+      "children_return": {
+        "label": "孩子正在回来",
+        "description": "感染儿童的体征并非单纯死亡，而是被白霜带入某种低温冬眠。"
+      },
+      "coexistence_project": {
+        "label": "共生项目档案",
+        "description": "旧实验曾尝试让白霜与人类共同分配热量，但失败记录被长期封存。"
+      },
+      "cold_fever": {
+        "label": "低温高烧",
+        "description": "患者表现为发热症状，却不断主动降温，像身体在制造冬眠环境。"
+      },
+      "deleted_warning": {
+        "label": "被删除的警告",
+        "description": "主控日志里被删除的一句话：不要让他们把霜带进热里。"
+      },
+      "do_not_restart": {
+        "label": "不要重启",
+        "description": "巡检队留下的警告，暗示反应炉重启会让白霜获得通向居住环的热路。"
+      },
+      "do_not_send_children": {
+        "label": "别送孩子上车",
+        "description": "下层记录显示，部分孩子一旦离开供暖核心，体征会迅速崩溃。"
+      },
+      "first_dead_ban": {
+        "label": "第一批死者禁令",
+        "description": "早期死亡名单被从公开档案中删去，说明避难站曾隐瞒白霜实验。"
+      },
+      "four_minute_gap": {
+        "label": "消失的四分钟",
+        "description": "03:12 到 03:16 之间没有监控画面，却决定了巡检队命运。"
+      },
+      "frost_eyes": {
+        "label": "霜中的眼睛",
+        "description": "白霜会在管壁和玻璃上形成类似眼睛的结构，追踪热源与声音。"
+      },
+      "frost_teeth": {
+        "label": "霜齿样本",
+        "description": "从白霜结构上取下的硬质样本，像牙，也像某种生长出来的阀门。"
+      },
+      "kapoor_awake": {
+        "label": "卡普尔仍醒着",
+        "description": "巡检队员卡普尔没有完全死亡，他可能保留了对白霜母体的记忆。"
+      },
+      "kapoor_video": {
+        "label": "卡普尔影像",
+        "description": "影像显示巡检队进入下层后，有人主动关闭了回程门。"
+      },
+      "last_locator": {
+        "label": "巡检队最后定位",
+        "description": "巡检队最后一次定位在下层反应炉，随后生命体征同时变成白线。"
+      },
+      "mother_under_core": {
+        "label": "炉下的妈妈",
+        "description": "多个孩子都提到炉下有妈妈在唱歌，说明白母正在模仿亲人。"
+      },
+      "mother_wants_heat": {
+        "label": "白母需要热量",
+        "description": "白母并不只想杀人，它需要稳定热源维持育室和冬眠者。"
+      },
+      "north_convoy": {
+        "label": "北方车队",
+        "description": "北方救援车队仍可能接应一部分幸存者，但风暴会吞掉落后的人。"
+      },
+      "old_organ_storage": {
+        "label": "旧器官库",
+        "description": "旧冷库曾用于保存器官和实验体，后来被改造成霜巢育室。"
+      },
+      "reactor_control_map": {
+        "label": "反应炉控制图",
+        "description": "控制图标出红线和蓝线两套热路，决定热量流向人群或下层。"
+      },
+      "shifting_tags": {
+        "label": "变动的尸袋标签",
+        "description": "尸袋标签在低温中悄悄变换，像有人在重新分配死者身份。"
+      },
+      "sleeping_city": {
+        "label": "冬眠城市",
+        "description": "白霜似乎想把整座避难站变成低温冬眠系统，而非立刻杀死所有人。"
+      },
+      "speaking_frost": {
+        "label": "会说话的白霜",
+        "description": "白霜能复制熟人的声音，用请求和威胁诱导人打开门或阀门。"
+      },
+      "team_sleeve": {
+        "label": "巡检队袖标",
+        "description": "失联队员的袖标出现在不该出现的位置，证明有人或某物移动过他们。"
+      },
+      "two_pipelines": {
+        "label": "双管线",
+        "description": "红线向居住环供热，蓝线通往下层冷却井；两条线可以互相牵制。"
+      },
+      "white_asks_heat": {
+        "label": "白霜索要热量",
+        "description": "白霜会主动提出交换，说明它理解供暖系统和人的谈判习惯。"
+      },
+      "white_mother_drawings": {
+        "label": "白母图纸",
+        "description": "图纸记录白母和供暖核心的连接方式，是共生或清除方案的关键。"
+      },
+      "white_roots": {
+        "label": "白色根系",
+        "description": "白霜根系已经长进水培温室和通风管，感染范围比预想更深。"
+      },
+      "xiaohe_mother_below": {
+        "label": "小禾母亲在下层",
+        "description": "苏小禾的母亲可能是白母模仿的原型，也是孩子们被召唤的原因。"
+      },
+      "zhou_key": {
+        "label": "周泠的钥匙",
+        "description": "周泠保留着旧冷库钥匙，说明她早就知道下层还有被封存的区域。"
+      },
+      "zhou_samples": {
+        "label": "周泠样本记录",
+        "description": "样本记录显示周泠一直在追踪感染者的低温变化。"
+      }
+    },
+    "items": {
+      "cold_storage_key": {
+        "label": "旧冷库钥匙",
+        "description": "能打开霜巢育室外层门，也会暴露你已经接近白母。"
+      },
+      "core_key": {
+        "label": "核心钥匙",
+        "description": "进入供暖核心手动授权区的钥匙，通常只交给下层巡检队长。"
+      },
+      "flare_gun": {
+        "label": "信号枪",
+        "description": "能在风暴中短暂标记位置，也可能吸引外面的东西。"
+      },
+      "heat_cell": {
+        "label": "标准热芯",
+        "description": "便携热源，可救人、维持设备，也能引诱白霜靠近。"
+      },
+      "lian_badge": {
+        "label": "连岚的肩章",
+        "description": "连岚交给你的身份物，必要时能让警卫队相信你的命令。"
+      },
+      "spore_sample": {
+        "label": "白霜孢丝样本",
+        "description": "从白色根系上取下的样本，证明白霜具有生长和模仿能力。"
+      },
+      "station_badge": {
+        "label": "旧站牌",
+        "description": "第一批死者留下的身份牌，记录被官方删除的名字。"
+      },
+      "tooth_sample": {
+        "label": "霜齿样本",
+        "description": "硬化的白霜碎片，能帮助周泠判断白母是否正在长出新的器官。"
+      }
+    }
+  },
+  "nodes": {
+    "start": {
+      "title": "白昼不会升起",
+      "scene": {
+        "id": "control_room",
+        "name": "十七号避难站控制室",
+        "type": "major",
+        "description": "三层防霜玻璃外是零下七十度的白夜，供暖核心的曲线在主屏上每分钟下降一点。",
+        "arrival": "你把冻裂的手套放在台面上，听见远处有人在通风管里敲了三下。"
+      },
+      "progress": 3,
+      "ambient": "wind",
+      "segments": [
+        {
+          "text": "极寒纪元第七年，太阳已经连续九天没有穿透风暴。你是十七号避难站的热工主管沈砚，今晚轮到你守供暖核心。",
+          "speaker": "系统",
+          "effect": "cold"
+        },
+        {
+          "text": "你的目标很清楚：找到失联的供暖核心巡检队，并决定是否重启地下反应炉。"
+        },
+        {
+          "text": "如果反应炉在天亮前熄火，三千名避难者会在零下七十度的风暴里冻死。主屏上，核心温度正在跌破安全线。"
+        }
+      ],
+      "chapterTitle": "第一章：白昼不会升起",
+      "choices": [
+        {
+          "text": "调出巡检队最后一次定位",
+          "next": "control_alarm",
+          "changes": {
+            "val": 2,
+            "addFlags": [
+              "checked_locator"
+            ],
+            "addClue": "last_locator"
+          }
+        },
+        {
+          "text": "先让警卫连岚封锁居住环",
+          "next": "speak_lian",
+          "changes": {
+            "val": -1,
+            "addFlags": [
+              "sealed_hab"
+            ],
+            "relationship": {
+              "lian": 1
+            }
+          }
+        }
+      ]
+    },
+    "control_alarm": {
+      "title": "消失的四分钟",
+      "scene": {
+        "id": "control_room",
+        "name": "十七号避难站控制室",
+        "type": "major",
+        "description": "三层防霜玻璃外是零下七十度的白夜，供暖核心的曲线在主屏上每分钟下降一点。",
+        "arrival": "你把冻裂的手套放在台面上，听见远处有人在通风管里敲了三下。"
+      },
+      "progress": 6,
+      "ambient": "static",
+      "segments": [
+        {
+          "text": "定位记录显示，巡检队在 03:12 进入下层反应炉。03:16 后，四个人的生命体征同时变成一条白线。"
+        },
+        {
+          "text": "系统没有报死亡。它给出的状态是：温度过低，身份待确认。"
+        }
+      ],
+      "choices": [
+        {
+          "text": "复制定位记录到腕机",
+          "next": "check_log",
+          "changes": {
+            "val": 3,
+            "addFlags": [
+              "copied_locator"
+            ],
+            "addClue": "four_minute_gap"
+          }
+        },
+        {
+          "text": "把记录发给连岚，请她准备武装护送",
+          "next": "speak_lian",
+          "changes": {
+            "val": 1,
+            "addFlags": [
+              "warned_lian"
+            ],
+            "relationship": {
+              "lian": 1
+            }
+          }
+        }
+      ]
+    },
+    "speak_lian": {
+      "title": "警卫的坏消息",
+      "scene": {
+        "id": "control_room",
+        "name": "十七号避难站控制室",
+        "type": "major",
+        "description": "三层防霜玻璃外是零下七十度的白夜，供暖核心的曲线在主屏上每分钟下降一点。",
+        "arrival": "你把冻裂的手套放在台面上，听见远处有人在通风管里敲了三下。"
+      },
+      "progress": 7,
+      "ambient": "wind",
+      "segments": [
+        {
+          "text": "连岚推门进来，肩章上结着冰。她没有先问反应炉，只把一枚儿童手环放到你面前。"
+        },
+        {
+          "text": "手环属于居住环的六岁女孩苏小禾。两小时前，她被登记为高烧；现在，她的体温记录是零下十二度。",
+          "speaker": "连岚"
+        }
+      ],
+      "choices": [
+        {
+          "text": "要求连岚带你去医务室",
+          "next": "infirmary",
+          "changes": {
+            "val": 1,
+            "addFlags": [
+              "saw_bracelet"
+            ],
+            "relationship": {
+              "lian": 1
+            }
+          }
+        },
+        {
+          "text": "让连岚留守控制室，你独自查日志",
+          "next": "check_log",
+          "changes": {
+            "val": -2,
+            "addFlags": [
+              "left_lian_control"
+            ]
+          }
+        }
+      ]
+    },
+    "check_log": {
+      "title": "主控日志",
+      "scene": {
+        "id": "control_room",
+        "name": "十七号避难站控制室",
+        "type": "major",
+        "description": "三层防霜玻璃外是零下七十度的白夜，供暖核心的曲线在主屏上每分钟下降一点。",
+        "arrival": "你把冻裂的手套放在台面上，听见远处有人在通风管里敲了三下。"
+      },
+      "progress": 9,
+      "ambient": "static",
+      "segments": [
+        {
+          "text": "日志里有一条人工删除痕迹。删除者用的是你自己的权限，时间在你睡着后的 02:41。"
+        },
+        {
+          "text": "被删内容只有一句：不要让他们把霜带进热里。"
+        }
+      ],
+      "choices": [
+        {
+          "text": "承认权限异常，通知连岚",
+          "next": "speak_lian",
+          "changes": {
+            "val": 2,
+            "addFlags": [
+              "admitted_breach"
+            ],
+            "relationship": {
+              "lian": 1
+            }
+          }
+        },
+        {
+          "text": "暂时隐瞒权限异常，先去医务室看孩子",
+          "next": "infirmary",
+          "changes": {
+            "val": -4,
+            "addFlags": [
+              "hid_breach"
+            ],
+            "addClue": "deleted_warning"
+          }
+        }
+      ]
+    },
+    "infirmary": {
+      "title": "医务室里的冷汗",
+      "scene": {
+        "id": "hab_ring",
+        "name": "居住环",
+        "type": "major",
+        "description": "隔热毯垂在走廊两侧，睡袋里传来压低的咳嗽声，墙上的霜像白色指纹。"
+      },
+      "progress": 12,
+      "ambient": "wind",
+      "segments": [
+        {
+          "text": "医务室挤满了人。加热灯全部打开，可墙角的水杯仍然结着冰。医生周泠把你拉到隔离帘后。"
+        },
+        {
+          "text": "“不是冻伤。”周泠压低声音，“他们身体里有东西在主动降温，像在给自己造冬眠环境。”",
+          "speaker": "周泠"
+        }
+      ],
+      "choices": [
+        {
+          "text": "检查苏小禾的病历",
+          "next": "patient_xiaohe",
+          "changes": {
+            "val": 2,
+            "addFlags": [
+              "met_zhou"
+            ],
+            "addClue": "cold_fever"
+          }
+        },
+        {
+          "text": "先去补给锁柜取热芯和破冰工具",
+          "next": "supply_lock",
+          "changes": {
+            "val": 3,
+            "addFlags": [
+              "met_zhou"
+            ],
+            "addItem": "heat_cell"
+          }
+        }
+      ]
+    },
+    "patient_xiaohe": {
+      "title": "孩子的纸条",
+      "scene": {
+        "id": "hab_ring",
+        "name": "居住环",
+        "type": "major",
+        "description": "隔热毯垂在走廊两侧，睡袋里传来压低的咳嗽声，墙上的霜像白色指纹。"
+      },
+      "progress": 14,
+      "ambient": "wind",
+      "segments": [
+        {
+          "text": "苏小禾躺在保温袋里，睫毛上挂着霜。她没有睁眼，却把一张湿透的纸条攥得很紧。"
+        },
+        {
+          "text": "纸条上写着：妈妈在炉子下面唱歌，她说那里很暖。"
+        }
+      ],
+      "choices": [
+        {
+          "text": "把纸条收进证物袋",
+          "next": "supply_lock",
+          "changes": {
+            "val": 2,
+            "addFlags": [
+              "took_child_note"
+            ],
+            "addClue": "child_note",
+            "unlockAchievement": "child_note"
+          }
+        },
+        {
+          "text": "把纸条交给周泠，请她安抚家属",
+          "next": "supply_lock",
+          "changes": {
+            "val": 1,
+            "addFlags": [
+              "zhou_has_note"
+            ],
+            "relationship": {
+              "zhou": 1
+            }
+          }
+        }
+      ]
+    },
+    "supply_lock": {
+      "title": "补给锁柜",
+      "scene": {
+        "id": "hab_ring",
+        "name": "居住环",
+        "type": "major",
+        "description": "隔热毯垂在走廊两侧，睡袋里传来压低的咳嗽声，墙上的霜像白色指纹。"
+      },
+      "progress": 16,
+      "ambient": "wind",
+      "segments": [
+        {
+          "text": "补给锁柜只剩两枚标准热芯、一把破冰锤和一支老式信号枪。管理系统要求你选择携带重量。"
+        },
+        {
+          "text": "远处有人开始拍门，喊着医务室藏了感染者。避难站的恐慌比风暴更快。"
+        }
+      ],
+      "choices": [
+        {
+          "text": "带上热芯和破冰锤",
+          "next": "choose_route",
+          "changes": {
+            "val": 6,
+            "addFlags": [
+              "has_heat_cell",
+              "has_ice_hammer"
+            ],
+            "addItem": "heat_cell"
+          }
+        },
+        {
+          "text": "带上信号枪和一枚热芯",
+          "next": "choose_route",
+          "changes": {
+            "val": 3,
+            "addFlags": [
+              "has_flare",
+              "has_heat_cell"
+            ],
+            "addItem": "flare_gun"
+          }
+        }
+      ]
+    },
+    "choose_route": {
+      "title": "三条下行路",
+      "scene": {
+        "id": "hab_ring",
+        "name": "居住环",
+        "type": "major",
+        "description": "隔热毯垂在走廊两侧，睡袋里传来压低的咳嗽声，墙上的霜像白色指纹。"
+      },
+      "progress": 18,
+      "ambient": "wind",
+      "segments": [
+        {
+          "text": "通往反应炉的主电梯已经停在负二层，不响应呼叫。你还可以穿过水培温室、临时停尸间，或从儿童区后面的维修楼梯下去。"
+        },
+        {
+          "text": "连岚把步枪背带收紧：“选一条。再晚十分钟，居住环会开始抢热芯。”",
+          "speaker": "连岚"
+        }
+      ],
+      "choices": [
+        {
+          "text": "穿过水培温室，寻找备用热管",
+          "next": "hydroponic_gate",
+          "changes": {
+            "val": 2,
+            "addFlags": [
+              "route_greenhouse"
+            ],
+            "unlockAchievement": "first_descent"
+          }
+        },
+        {
+          "text": "从停尸间旁边的检修门下去",
+          "next": "morgue_entry",
+          "changes": {
+            "val": -2,
+            "addFlags": [
+              "route_morgue"
+            ],
+            "unlockAchievement": "first_descent"
+          }
+        },
+        {
+          "text": "走儿童区后面的维修楼梯",
+          "next": "nursery_hall",
+          "changes": {
+            "val": 1,
+            "addFlags": [
+              "route_children"
+            ],
+            "unlockAchievement": "first_descent"
+          }
+        }
+      ]
+    },
+    "hydroponic_gate": {
+      "title": "冻裂的温室门",
+      "scene": {
+        "id": "greenhouse",
+        "name": "水培温室",
+        "type": "major",
+        "description": "冻裂的水槽里立着黑色菜根，玻璃穹顶被雪压得缓慢呻吟。"
+      },
+      "progress": 21,
+      "ambient": "wind",
+      "segments": [
+        {
+          "text": "温室门被冻在轨道里。门缝后面有水声，像有人在黑暗中轻轻洗手。"
+        },
+        {
+          "text": "玻璃上从内侧写着两个字：别开。"
+        }
+      ],
+      "chapterTitle": "第二章：站内没有暖处",
+      "choices": [
+        {
+          "text": "用破冰锤敲开门轨",
+          "next": "hydroponic_inside",
+          "changes": {
+            "val": -2,
+            "addFlags": [
+              "forced_greenhouse"
+            ]
+          },
+          "effect": "shake"
+        },
+        {
+          "text": "从维护管道绕进温室",
+          "next": "frozen_greenhouse",
+          "changes": {
+            "val": 2,
+            "addFlags": [
+              "used_pipe"
+            ]
+          }
+        }
+      ]
+    },
+    "hydroponic_inside": {
+      "title": "水声",
+      "scene": {
+        "id": "greenhouse",
+        "name": "水培温室",
+        "type": "major",
+        "description": "冻裂的水槽里立着黑色菜根，玻璃穹顶被雪压得缓慢呻吟。"
+      },
+      "progress": 23,
+      "ambient": "wind",
+      "segments": [
+        {
+          "text": "你推门进去，水培槽里没有水，只有一层透明的霜。水声来自墙后的灌溉管，节奏像人类呼吸。"
+        },
+        {
+          "text": "连岚举枪照向管道，里面有一截巡检队的袖标，被霜粘在阀门上。",
+          "speaker": "连岚"
+        }
+      ],
+      "choices": [
+        {
+          "text": "剪下袖标作为证据",
+          "next": "seed_vault",
+          "changes": {
+            "val": 1,
+            "addFlags": [
+              "took_sleeve"
+            ],
+            "addClue": "team_sleeve"
+          }
+        },
+        {
+          "text": "沿着灌溉管追踪声音",
+          "next": "frozen_greenhouse",
+          "changes": {
+            "val": -3,
+            "addFlags": [
+              "followed_water_sound"
+            ]
+          }
+        }
+      ]
+    },
+    "frozen_greenhouse": {
+      "title": "白色根系",
+      "scene": {
+        "id": "greenhouse",
+        "name": "水培温室",
+        "type": "major",
+        "description": "冻裂的水槽里立着黑色菜根，玻璃穹顶被雪压得缓慢呻吟。"
+      },
+      "progress": 25,
+      "ambient": "wind",
+      "segments": [
+        {
+          "text": "你在菜根下发现白色丝状物。它们没有被冻死，反而绕着热管接口生长，像在寻找更暖的血管。"
+        },
+        {
+          "text": "腕机提示：未知生物质。建议焚毁。"
+        }
+      ],
+      "choices": [
+        {
+          "text": "用信号枪烧掉一片根系",
+          "next": "seed_vault",
+          "changes": {
+            "val": 4,
+            "addFlags": [
+              "burned_roots"
+            ],
+            "addClue": "white_roots"
+          },
+          "effect": "flash"
+        },
+        {
+          "text": "取样保存，留给周泠分析",
+          "next": "seed_vault",
+          "changes": {
+            "val": -1,
+            "addFlags": [
+              "kept_sample"
+            ],
+            "addClue": "white_roots",
+            "addItem": "spore_sample"
+          }
+        }
+      ]
+    },
+    "seed_vault": {
+      "title": "种子库",
+      "scene": {
+        "id": "greenhouse",
+        "name": "水培温室",
+        "type": "major",
+        "description": "冻裂的水槽里立着黑色菜根，玻璃穹顶被雪压得缓慢呻吟。"
+      },
+      "progress": 27,
+      "ambient": "wind",
+      "segments": [
+        {
+          "text": "种子库的冷柜全开着。冻雾中，一个巡检队员坐在地上，双手抱着胸牌。他的眼睛睁着，却没有瞳孔，只有一层白霜。"
+        },
+        {
+          "text": "他的录音笔还在工作，重复播放同一句：不要重启，它们靠热醒来。"
+        }
+      ],
+      "choices": [
+        {
+          "text": "取走录音笔",
+          "next": "maintenance_lift",
+          "changes": {
+            "val": 2,
+            "addFlags": [
+              "has_recorder"
+            ],
+            "addClue": "do_not_restart"
+          }
+        },
+        {
+          "text": "检查队员的胸牌和伤口",
+          "next": "dead_engineer",
+          "changes": {
+            "val": -2,
+            "addFlags": [
+              "checked_body"
+            ],
+            "addClue": "frost_eyes"
+          }
+        }
+      ]
+    },
+    "morgue_entry": {
+      "title": "停尸间门口",
+      "scene": {
+        "id": "morgue",
+        "name": "临时停尸间",
+        "type": "major",
+        "description": "这里比走廊更冷。尸袋整齐地挂在滑轨上，每个标签都被霜盖住一半。"
+      },
+      "progress": 21,
+      "ambient": "wind",
+      "segments": [
+        {
+          "text": "停尸间外的温度计爆表，低温标尺已经到底。门后传来滑轨移动的声音，一格一格，像有人在挑选身体。"
+        },
+        {
+          "text": "门禁记录显示，半小时前周泠来过这里。"
+        }
+      ],
+      "choices": [
+        {
+          "text": "刷开停尸间门",
+          "next": "body_tags",
+          "changes": {
+            "val": -2,
+            "addFlags": [
+              "entered_morgue"
+            ]
+          }
+        },
+        {
+          "text": "先追查周泠的门禁记录",
+          "next": "morgue_records",
+          "changes": {
+            "val": 1,
+            "addFlags": [
+              "checked_zhou_access"
+            ],
+            "relationship": {
+              "zhou": -1
+            }
+          }
+        }
+      ]
+    },
+    "morgue_records": {
+      "title": "周泠的门禁",
+      "scene": {
+        "id": "morgue",
+        "name": "临时停尸间",
+        "type": "major",
+        "description": "这里比走廊更冷。尸袋整齐地挂在滑轨上，每个标签都被霜盖住一半。"
+      },
+      "progress": 23,
+      "ambient": "wind",
+      "segments": [
+        {
+          "text": "记录显示，周泠带走了三具低温死亡者的肺部切片。备注栏写着：霜丝有记忆反应。"
+        },
+        {
+          "text": "连岚看向你：“医生没有报告这个。你还信她吗？”",
+          "speaker": "连岚"
+        }
+      ],
+      "choices": [
+        {
+          "text": "把记录发回控制室备份",
+          "next": "body_tags",
+          "changes": {
+            "val": 2,
+            "addFlags": [
+              "backed_zhou_record"
+            ],
+            "addClue": "zhou_samples",
+            "relationship": {
+              "lian": 1
+            }
+          }
+        },
+        {
+          "text": "删除周泠的违规记录，先保住医务室秩序",
+          "next": "body_tags",
+          "changes": {
+            "val": -4,
+            "addFlags": [
+              "protected_zhou"
+            ],
+            "relationship": {
+              "zhou": 2
+            }
+          }
+        }
+      ]
+    },
+    "body_tags": {
+      "title": "会变字的标签",
+      "scene": {
+        "id": "morgue",
+        "name": "临时停尸间",
+        "type": "major",
+        "description": "这里比走廊更冷。尸袋整齐地挂在滑轨上，每个标签都被霜盖住一半。"
+      },
+      "progress": 25,
+      "ambient": "wind",
+      "segments": [
+        {
+          "text": "尸袋标签上的名字正在变化。你看见巡检队员的名字、苏小禾的名字，最后看见自己的名字。"
+        },
+        {
+          "text": "冷柜深处，有人用指甲从内部刮门。"
+        }
+      ],
+      "choices": [
+        {
+          "text": "打开刮响的冷柜",
+          "next": "dead_engineer",
+          "changes": {
+            "val": -4,
+            "addFlags": [
+              "opened_scratching_locker"
+            ]
+          },
+          "effect": "shake"
+        },
+        {
+          "text": "锁死冷柜，记录标签异常",
+          "next": "white_tunnel",
+          "changes": {
+            "val": 2,
+            "addFlags": [
+              "locked_morgue"
+            ],
+            "addClue": "shifting_tags"
+          }
+        }
+      ]
+    },
+    "dead_engineer": {
+      "title": "还没死透的人",
+      "scene": {
+        "id": "morgue",
+        "name": "临时停尸间",
+        "type": "major",
+        "description": "这里比走廊更冷。尸袋整齐地挂在滑轨上，每个标签都被霜盖住一半。"
+      },
+      "progress": 28,
+      "ambient": "wind",
+      "segments": [
+        {
+          "text": "冷柜里的巡检队员忽然吸气。他的胸腔发出冰面破裂的声音，嘴唇却只动出一个词：妈妈。"
+        },
+        {
+          "text": "连岚后退半步。你看见他喉咙里有白色丝线，正在模仿声带。"
+        }
+      ],
+      "choices": [
+        {
+          "text": "给他注射镇静剂，保留活体证据",
+          "next": "white_tunnel",
+          "changes": {
+            "val": -5,
+            "addFlags": [
+              "kept_host_alive"
+            ],
+            "addClue": "speaking_frost",
+            "relationship": {
+              "zhou": 1
+            }
+          }
+        },
+        {
+          "text": "用热芯烧断霜丝，结束他的痛苦",
+          "next": "white_tunnel",
+          "changes": {
+            "val": 5,
+            "addFlags": [
+              "burned_host"
+            ],
+            "addClue": "speaking_frost"
+          },
+          "effect": "flash"
+        }
+      ]
+    },
+    "nursery_hall": {
+      "title": "儿童区后门",
+      "scene": {
+        "id": "hab_ring",
+        "name": "居住环",
+        "type": "major",
+        "description": "隔热毯垂在走廊两侧，睡袋里传来压低的咳嗽声，墙上的霜像白色指纹。"
+      },
+      "progress": 21,
+      "ambient": "wind",
+      "segments": [
+        {
+          "text": "儿童区已经断电。墙上贴着孩子们画的太阳，每一张太阳都被人用白笔涂成了月亮。"
+        },
+        {
+          "text": "你听见很多孩子在同一时间低声唱歌，歌词来自供暖核心的启动手册。"
+        }
+      ],
+      "choices": [
+        {
+          "text": "进入宿舍确认孩子人数",
+          "next": "children_dorm",
+          "changes": {
+            "val": 1,
+            "addFlags": [
+              "entered_children"
+            ]
+          }
+        },
+        {
+          "text": "绕过宿舍，直奔护士站",
+          "next": "nurse_station",
+          "changes": {
+            "val": 2,
+            "addFlags": [
+              "skipped_dorm"
+            ]
+          }
+        }
+      ]
+    },
+    "children_dorm": {
+      "title": "空床位",
+      "scene": {
+        "id": "hab_ring",
+        "name": "居住环",
+        "type": "major",
+        "description": "隔热毯垂在走廊两侧，睡袋里传来压低的咳嗽声，墙上的霜像白色指纹。"
+      },
+      "progress": 24,
+      "ambient": "wind",
+      "segments": [
+        {
+          "text": "宿舍里只有空床。每个枕头中央都有一枚结霜的乳牙，按床号排成整齐的一列。"
+        },
+        {
+          "text": "苏小禾的床下压着一个录音贴。"
+        }
+      ],
+      "choices": [
+        {
+          "text": "播放录音贴",
+          "next": "dorm_recording",
+          "changes": {
+            "val": -1,
+            "addFlags": [
+              "played_child_recording"
+            ],
+            "addClue": "child_song"
+          }
+        },
+        {
+          "text": "收起乳牙样本，继续下行",
+          "next": "nurse_station",
+          "changes": {
+            "val": 1,
+            "addFlags": [
+              "took_teeth_sample"
+            ],
+            "addClue": "frost_teeth",
+            "addItem": "tooth_sample"
+          }
+        }
+      ]
+    },
+    "dorm_recording": {
+      "title": "妈妈在炉下唱歌",
+      "scene": {
+        "id": "hab_ring",
+        "name": "居住环",
+        "type": "major",
+        "description": "隔热毯垂在走廊两侧，睡袋里传来压低的咳嗽声，墙上的霜像白色指纹。"
+      },
+      "progress": 26,
+      "ambient": "wind",
+      "segments": [
+        {
+          "text": "录音里，苏小禾小声说：“妈妈说，冷不是死。冷是等春天。她让我把所有人带到炉子下面。”"
+        },
+        {
+          "text": "录音结束后，走廊另一头响起孩子们的脚步声。人数不多，却像从每一面墙里走来。"
+        }
+      ],
+      "choices": [
+        {
+          "text": "关掉录音，锁上儿童区门",
+          "next": "white_tunnel",
+          "changes": {
+            "val": 2,
+            "addFlags": [
+              "sealed_children"
+            ],
+            "addClue": "mother_under_core",
+            "unlockAchievement": "child_note"
+          }
+        },
+        {
+          "text": "顺着脚步声追下维修楼梯",
+          "next": "nurse_station",
+          "changes": {
+            "val": -3,
+            "addFlags": [
+              "followed_children"
+            ],
+            "addClue": "mother_under_core"
+          }
+        }
+      ]
+    },
+    "nurse_station": {
+      "title": "护士站的热水",
+      "scene": {
+        "id": "hab_ring",
+        "name": "居住环",
+        "type": "major",
+        "description": "隔热毯垂在走廊两侧，睡袋里传来压低的咳嗽声，墙上的霜像白色指纹。"
+      },
+      "progress": 28,
+      "ambient": "wind",
+      "segments": [
+        {
+          "text": "护士站的水壶还冒着热气。旁边的值班本记录着一个不可能的事实：失踪孩子每隔二十分钟回来喝一次水。"
+        },
+        {
+          "text": "最后一行写着：他们说下层比这里暖。"
+        }
+      ],
+      "choices": [
+        {
+          "text": "带走值班本",
+          "next": "white_tunnel",
+          "changes": {
+            "val": 2,
+            "addFlags": [
+              "has_nurse_log"
+            ],
+            "addClue": "children_return"
+          }
+        },
+        {
+          "text": "把热水分给走廊里的家属",
+          "next": "white_tunnel",
+          "changes": {
+            "val": -1,
+            "addFlags": [
+              "gave_hot_water"
+            ],
+            "relationship": {
+              "station": 1
+            }
+          }
+        }
+      ]
+    },
+    "maintenance_lift": {
+      "title": "卡住的货梯",
+      "scene": {
+        "id": "greenhouse",
+        "name": "水培温室",
+        "type": "major",
+        "description": "冻裂的水槽里立着黑色菜根，玻璃穹顶被雪压得缓慢呻吟。"
+      },
+      "progress": 30,
+      "ambient": "wind",
+      "segments": [
+        {
+          "text": "货梯卡在负一层，轿厢里挂着一件巡检队外套。外套内侧结着白霜，霜下写着一串数字：0316。"
+        },
+        {
+          "text": "你记得那正是生命体征变白的时间。"
+        }
+      ],
+      "choices": [
+        {
+          "text": "记录数字，改走白隧道",
+          "next": "white_tunnel",
+          "changes": {
+            "val": 2,
+            "addFlags": [
+              "knows_0316"
+            ],
+            "addClue": "0316"
+          }
+        },
+        {
+          "text": "强行启动货梯下降",
+          "next": "tunnel_pressure",
+          "changes": {
+            "val": -4,
+            "addFlags": [
+              "forced_lift"
+            ]
+          },
+          "effect": "shake"
+        }
+      ]
+    },
+    "white_tunnel": {
+      "title": "白隧道入口",
+      "scene": {
+        "id": "white_tunnel",
+        "name": "白隧道",
+        "type": "major",
+        "description": "通往反应炉的地铁隧道已经停运，轨道之间堆着盐、破冰锤和没有归还的呼吸面罩。"
+      },
+      "progress": 33,
+      "ambient": "wind",
+      "segments": [
+        {
+          "text": "你们进入白隧道。风从反应炉方向吹来，却比身后的居住环更冷。轨道尽头亮着一点红光。"
+        },
+        {
+          "text": "通讯里传来周泠的声音：“沈砚，如果你看见会说话的死人，不要回答它们的问题。”",
+          "speaker": "周泠"
+        }
+      ],
+      "chapterTitle": "第三章：白隧道",
+      "choices": [
+        {
+          "text": "询问周泠为什么知道死人会说话",
+          "next": "tunnel_pressure",
+          "changes": {
+            "val": 2,
+            "addFlags": [
+              "questioned_zhou"
+            ],
+            "relationship": {
+              "zhou": -1
+            }
+          }
+        },
+        {
+          "text": "关掉通讯，保持静默前进",
+          "next": "first_thing",
+          "changes": {
+            "val": 1,
+            "addFlags": [
+              "radio_silent"
+            ]
+          }
+        }
+      ]
+    },
+    "tunnel_pressure": {
+      "title": "压力门",
+      "scene": {
+        "id": "white_tunnel",
+        "name": "白隧道",
+        "type": "major",
+        "description": "通往反应炉的地铁隧道已经停运，轨道之间堆着盐、破冰锤和没有归还的呼吸面罩。"
+      },
+      "progress": 36,
+      "ambient": "wind",
+      "segments": [
+        {
+          "text": "压力门前堆着巡检队的工具箱。箱盖被人从内部顶开，里面装着四套整齐叠好的制服。"
+        },
+        {
+          "text": "制服胸口的姓名牌被霜丝缝成一张脸。那张脸睁开眼，看向连岚。"
+        }
+      ],
+      "choices": [
+        {
+          "text": "命令连岚后退，自己检查工具箱",
+          "next": "first_thing",
+          "changes": {
+            "val": 2,
+            "addFlags": [
+              "protected_lian"
+            ],
+            "relationship": {
+              "lian": 2
+            }
+          }
+        },
+        {
+          "text": "让连岚开枪打碎工具箱",
+          "next": "seal_door",
+          "changes": {
+            "val": -3,
+            "addFlags": [
+              "shot_toolbox"
+            ],
+            "relationship": {
+              "lian": -1
+            }
+          },
+          "effect": "flash"
+        }
+      ]
+    },
+    "first_thing": {
+      "title": "第一只白物",
+      "scene": {
+        "id": "white_tunnel",
+        "name": "白隧道",
+        "type": "major",
+        "description": "通往反应炉的地铁隧道已经停运，轨道之间堆着盐、破冰锤和没有归还的呼吸面罩。"
+      },
+      "progress": 38,
+      "ambient": "wind",
+      "segments": [
+        {
+          "text": "它从轨道下方爬出来，穿着巡检队的靴子，身体却像由冻雾和骨架临时拼成。"
+        },
+        {
+          "text": "它没有攻击你，只用巡检队长的声音问：核心还热吗？"
+        }
+      ],
+      "choices": [
+        {
+          "text": "回答它：核心还热，但正在降温",
+          "next": "seal_door",
+          "changes": {
+            "val": -2,
+            "addFlags": [
+              "answered_white"
+            ],
+            "addClue": "white_asks_heat"
+          }
+        },
+        {
+          "text": "不开口，绕过它去开密封门",
+          "next": "seal_door",
+          "changes": {
+            "val": 2,
+            "addFlags": [
+              "ignored_white"
+            ]
+          }
+        },
+        {
+          "text": "用热芯逼退它",
+          "next": "reopen_or_bypass",
+          "changes": {
+            "val": 4,
+            "addFlags": [
+              "repelled_white"
+            ]
+          },
+          "effect": "flash"
+        }
+      ]
+    },
+    "seal_door": {
+      "title": "密封门",
+      "scene": {
+        "id": "white_tunnel",
+        "name": "白隧道",
+        "type": "major",
+        "description": "通往反应炉的地铁隧道已经停运，轨道之间堆着盐、破冰锤和没有归还的呼吸面罩。"
+      },
+      "progress": 41,
+      "ambient": "wind",
+      "segments": [
+        {
+          "text": "密封门的观察窗结着内霜。门后有人把手掌贴上来，五根手指都戴着巡检队的戒指。"
+        },
+        {
+          "text": "门禁屏显示：下层仍有生命体征，数量十九。"
+        }
+      ],
+      "choices": [
+        {
+          "text": "按规程开启密封门",
+          "next": "reactor_antechamber",
+          "changes": {
+            "val": -3,
+            "addFlags": [
+              "opened_seal"
+            ]
+          }
+        },
+        {
+          "text": "先从旁通维修管道绕行",
+          "next": "reopen_or_bypass",
+          "changes": {
+            "val": 2,
+            "addFlags": [
+              "used_bypass"
+            ]
+          }
+        }
+      ]
+    },
+    "reopen_or_bypass": {
+      "title": "旁通管道",
+      "scene": {
+        "id": "white_tunnel",
+        "name": "白隧道",
+        "type": "major",
+        "description": "通往反应炉的地铁隧道已经停运，轨道之间堆着盐、破冰锤和没有归还的呼吸面罩。"
+      },
+      "progress": 43,
+      "ambient": "wind",
+      "segments": [
+        {
+          "text": "旁通管道狭窄，隔热棉被撕开，里面塞满了孩子的画。每张画都画着同一个人：穿白衣的母亲，站在反应炉里。"
+        },
+        {
+          "text": "你摸到一把冷库钥匙，钥匙柄上刻着周泠的编号。"
+        }
+      ],
+      "choices": [
+        {
+          "text": "收起周泠的冷库钥匙",
+          "next": "reactor_antechamber",
+          "changes": {
+            "val": 2,
+            "addFlags": [
+              "has_cold_key"
+            ],
+            "addClue": "zhou_key",
+            "addItem": "cold_storage_key"
+          }
+        },
+        {
+          "text": "把孩子的画拍照上传控制室",
+          "next": "reactor_antechamber",
+          "changes": {
+            "val": 1,
+            "addFlags": [
+              "uploaded_drawings"
+            ],
+            "addClue": "white_mother_drawings"
+          }
+        }
+      ]
+    },
+    "reactor_antechamber": {
+      "title": "下层前室",
+      "scene": {
+        "id": "lower_reactor",
+        "name": "反应炉下层",
+        "type": "major",
+        "description": "热管像巨大的肋骨埋在墙里，红色应急灯把每个人的影子拉得很长。"
+      },
+      "progress": 46,
+      "ambient": "static",
+      "segments": [
+        {
+          "text": "前室的地面铺着一层薄薄的白霜。霜下封着许多手印，有成人，也有孩子。"
+        },
+        {
+          "text": "墙上用巡检队的血写着：我们没有失踪，我们被留下看门。"
+        }
+      ],
+      "chapterTitle": "第四章：反应炉下层",
+      "choices": [
+        {
+          "text": "检查巡检队临时营地",
+          "next": "team_barracks",
+          "changes": {
+            "val": 2,
+            "addFlags": [
+              "entered_lower"
+            ]
+          }
+        },
+        {
+          "text": "直接去下层医务舱找幸存者",
+          "next": "medbay_lower",
+          "changes": {
+            "val": -1,
+            "addFlags": [
+              "rushed_medbay"
+            ]
+          }
+        }
+      ]
+    },
+    "team_barracks": {
+      "title": "巡检队营地",
+      "scene": {
+        "id": "lower_reactor",
+        "name": "反应炉下层",
+        "type": "major",
+        "description": "热管像巨大的肋骨埋在墙里，红色应急灯把每个人的影子拉得很长。"
+      },
+      "progress": 48,
+      "ambient": "wind",
+      "segments": [
+        {
+          "text": "睡袋被整齐割开，里面没有人，只有四堆还带着体温的霜。巡检队长卡普尔的平板压在工具箱下。"
+        },
+        {
+          "text": "平板电量只够播放最后一段视频。"
+        }
+      ],
+      "choices": [
+        {
+          "text": "播放卡普尔的视频",
+          "next": "kapoor_log",
+          "changes": {
+            "val": 1,
+            "addFlags": [
+              "played_kapoor_log"
+            ],
+            "addClue": "kapoor_video"
+          }
+        },
+        {
+          "text": "先搜工具箱找反应炉钥匙",
+          "next": "key_panel",
+          "changes": {
+            "val": 3,
+            "addFlags": [
+              "searched_tools"
+            ]
+          }
+        }
+      ]
+    },
+    "kapoor_log": {
+      "title": "卡普尔的视频",
+      "scene": {
+        "id": "lower_reactor",
+        "name": "反应炉下层",
+        "type": "major",
+        "description": "热管像巨大的肋骨埋在墙里，红色应急灯把每个人的影子拉得很长。"
+      },
+      "progress": 50,
+      "ambient": "wind",
+      "segments": [
+        {
+          "text": "视频里，卡普尔靠着反应炉井壁，脸上结霜。他说：“不是怪物闯进来，是我们把她挖出来了。”"
+        },
+        {
+          "text": "“末世第一年，我们把第一批冻死者接进下层，用反应炉余热保存器官。白霜从那时开始学会了人的形状。”",
+          "speaker": "卡普尔"
+        }
+      ],
+      "choices": [
+        {
+          "text": "把视频发给全站，公开真相",
+          "next": "lian_argument",
+          "changes": {
+            "val": 4,
+            "addFlags": [
+              "broadcast_truth"
+            ],
+            "addClue": "old_organ_storage",
+            "relationship": {
+              "station": -1
+            }
+          }
+        },
+        {
+          "text": "只发给连岚和周泠，避免恐慌",
+          "next": "lian_argument",
+          "changes": {
+            "val": 1,
+            "addFlags": [
+              "shared_truth_small"
+            ],
+            "addClue": "old_organ_storage",
+            "relationship": {
+              "lian": 1,
+              "zhou": 1
+            }
+          }
+        }
+      ]
+    },
+    "lian_argument": {
+      "title": "连岚的枪口",
+      "scene": {
+        "id": "lower_reactor",
+        "name": "反应炉下层",
+        "type": "major",
+        "description": "热管像巨大的肋骨埋在墙里，红色应急灯把每个人的影子拉得很长。"
+      },
+      "progress": 52,
+      "ambient": "wind",
+      "segments": [
+        {
+          "text": "连岚听完视频，枪口垂下又抬起。“我妹妹就在第一批冻死者里。”她的声音很稳，“如果那些东西会学人，她可能也在下面。”",
+          "speaker": "连岚"
+        },
+        {
+          "text": "你第一次意识到，重启反应炉不只是技术决定。热会救活三千人，也可能叫醒已经学会饥饿的死者。"
+        }
+      ],
+      "choices": [
+        {
+          "text": "答应连岚，如果看见她妹妹就先确认身份",
+          "next": "medbay_lower",
+          "changes": {
+            "val": 2,
+            "addFlags": [
+              "promised_lian"
+            ],
+            "relationship": {
+              "lian": 2
+            }
+          }
+        },
+        {
+          "text": "坚持任务优先，任何白化体都不能放出",
+          "next": "medbay_lower",
+          "changes": {
+            "val": 1,
+            "addFlags": [
+              "mission_first"
+            ],
+            "relationship": {
+              "lian": -2
+            }
+          }
+        }
+      ]
+    },
+    "medbay_lower": {
+      "title": "下层医务舱",
+      "scene": {
+        "id": "lower_reactor",
+        "name": "反应炉下层",
+        "type": "major",
+        "description": "热管像巨大的肋骨埋在墙里，红色应急灯把每个人的影子拉得很长。"
+      },
+      "progress": 53,
+      "ambient": "wind",
+      "segments": [
+        {
+          "text": "下层医务舱的门半开，里面挂着十几袋冷凝血浆。周泠的肺部切片在显微镜下自己移动。"
+        },
+        {
+          "text": "一个巡检队员被绑在病床上，胸口以下已经长成透明冰晶。"
+        }
+      ],
+      "choices": [
+        {
+          "text": "询问被绑住的巡检队员",
+          "next": "frostbite_patient",
+          "changes": {
+            "val": -2,
+            "addFlags": [
+              "questioned_patient"
+            ]
+          }
+        },
+        {
+          "text": "检查隔离窗后的样本",
+          "next": "containment_window",
+          "changes": {
+            "val": 2,
+            "addFlags": [
+              "checked_samples"
+            ]
+          }
+        }
+      ]
+    },
+    "frostbite_patient": {
+      "title": "半个人",
+      "scene": {
+        "id": "lower_reactor",
+        "name": "反应炉下层",
+        "type": "major",
+        "description": "热管像巨大的肋骨埋在墙里，红色应急灯把每个人的影子拉得很长。"
+      },
+      "progress": 55,
+      "ambient": "wind",
+      "segments": [
+        {
+          "text": "巡检队员睁眼，先叫出你的名字，又叫出连岚妹妹的名字，最后叫出苏小禾妈妈的名字。"
+        },
+        {
+          "text": "“我们不是死人。”他每说一个字，牙齿就碎下一点，“我们是冬天借来的人。”",
+          "speaker": "巡检队员"
+        }
+      ],
+      "choices": [
+        {
+          "text": "记录他说出的名字",
+          "next": "containment_window",
+          "changes": {
+            "val": 1,
+            "addFlags": [
+              "recorded_names"
+            ],
+            "addClue": "borrowed_names"
+          }
+        },
+        {
+          "text": "切断床边热源，停止霜丝扩张",
+          "next": "core_bridge",
+          "changes": {
+            "val": 4,
+            "addFlags": [
+              "cut_patient_heat"
+            ]
+          },
+          "effect": "cold"
+        }
+      ]
+    },
+    "containment_window": {
+      "title": "隔离窗",
+      "scene": {
+        "id": "lower_reactor",
+        "name": "反应炉下层",
+        "type": "major",
+        "description": "热管像巨大的肋骨埋在墙里，红色应急灯把每个人的影子拉得很长。"
+      },
+      "progress": 57,
+      "ambient": "wind",
+      "segments": [
+        {
+          "text": "隔离窗后，霜丝在培养皿里组成一张女性的脸。她反复张口，没有声音。"
+        },
+        {
+          "text": "周泠的批注贴在玻璃上：母体并不想杀人。母体想取暖。"
+        }
+      ],
+      "choices": [
+        {
+          "text": "拍下母体形态",
+          "next": "core_bridge",
+          "changes": {
+            "val": 1,
+            "addFlags": [
+              "saw_mother_shape"
+            ],
+            "addClue": "mother_wants_heat"
+          }
+        },
+        {
+          "text": "用热芯灼烧培养皿，测试反应",
+          "next": "spore_fan",
+          "changes": {
+            "val": 5,
+            "addFlags": [
+              "tested_spores"
+            ]
+          },
+          "effect": "flash"
+        }
+      ]
+    },
+    "core_bridge": {
+      "title": "核心桥",
+      "scene": {
+        "id": "lower_reactor",
+        "name": "反应炉下层",
+        "type": "major",
+        "description": "热管像巨大的肋骨埋在墙里，红色应急灯把每个人的影子拉得很长。"
+      },
+      "progress": 59,
+      "ambient": "wind",
+      "segments": [
+        {
+          "text": "核心桥横跨黑井。桥下传来数百人的呼吸声，整齐、缓慢，像一座城市在睡觉。"
+        },
+        {
+          "text": "桥中央躺着巡检队长卡普尔。他还活着，手里攥着核心钥匙。"
+        }
+      ],
+      "choices": [
+        {
+          "text": "爬到卡普尔身边拿钥匙",
+          "next": "key_panel",
+          "changes": {
+            "val": -2,
+            "addFlags": [
+              "approached_kapoor"
+            ]
+          }
+        },
+        {
+          "text": "先检查桥下呼吸声来源",
+          "next": "coolant_pit",
+          "changes": {
+            "val": 1,
+            "addFlags": [
+              "looked_under_bridge"
+            ]
+          }
+        }
+      ]
+    },
+    "coolant_pit": {
+      "title": "冷却井",
+      "scene": {
+        "id": "lower_reactor",
+        "name": "反应炉下层",
+        "type": "major",
+        "description": "热管像巨大的肋骨埋在墙里，红色应急灯把每个人的影子拉得很长。"
+      },
+      "progress": 61,
+      "ambient": "wind",
+      "segments": [
+        {
+          "text": "井下不是水，是成千上万具被霜丝连在一起的身体。他们没有腐烂，像在等待同一个春天。"
+        },
+        {
+          "text": "你看见一名女人抬头。她穿着苏小禾母亲的旧外套。"
+        }
+      ],
+      "choices": [
+        {
+          "text": "向井下喊苏小禾母亲的名字",
+          "next": "nursery_core",
+          "changes": {
+            "val": -3,
+            "addFlags": [
+              "called_mother"
+            ],
+            "addClue": "xiaohe_mother_below"
+          }
+        },
+        {
+          "text": "标记井下坐标，继续去核心钥匙台",
+          "next": "key_panel",
+          "changes": {
+            "val": 2,
+            "addFlags": [
+              "mapped_pit"
+            ],
+            "addClue": "sleeping_city"
+          }
+        }
+      ]
+    },
+    "spore_fan": {
+      "title": "孢子风扇",
+      "scene": {
+        "id": "lower_reactor",
+        "name": "反应炉下层",
+        "type": "major",
+        "description": "热管像巨大的肋骨埋在墙里，红色应急灯把每个人的影子拉得很长。"
+      },
+      "progress": 62,
+      "ambient": "wind",
+      "segments": [
+        {
+          "text": "培养皿受热后爆开，白色孢粉被通风扇卷入管道。警报立刻响起：下层隔离污染。"
+        },
+        {
+          "text": "周泠在通讯里骂了你一句，然后开始手动关闭上行风阀。"
+        }
+      ],
+      "choices": [
+        {
+          "text": "协助周泠关闭上行风阀",
+          "next": "archive_terminal",
+          "changes": {
+            "val": 3,
+            "addFlags": [
+              "closed_air_valve"
+            ],
+            "relationship": {
+              "zhou": 2
+            }
+          }
+        },
+        {
+          "text": "放弃风阀，赶去核心钥匙台",
+          "next": "key_panel",
+          "changes": {
+            "val": -4,
+            "addFlags": [
+              "spores_in_ducts"
+            ],
+            "relationship": {
+              "zhou": -2
+            }
+          }
+        }
+      ]
+    },
+    "key_panel": {
+      "title": "核心钥匙台",
+      "scene": {
+        "id": "lower_reactor",
+        "name": "反应炉下层",
+        "type": "major",
+        "description": "热管像巨大的肋骨埋在墙里，红色应急灯把每个人的影子拉得很长。"
+      },
+      "progress": 64,
+      "ambient": "wind",
+      "segments": [
+        {
+          "text": "钥匙台有两个插槽。一个插槽属于热工主管，另一个属于巡检队长。卡普尔的手指已经冻在钥匙柄上。"
+        },
+        {
+          "text": "如果强行掰开，他会醒。或者，某个借他身体说话的东西会醒。"
+        }
+      ],
+      "choices": [
+        {
+          "text": "轻声叫醒卡普尔，要求他自己交出钥匙",
+          "next": "archive_terminal",
+          "changes": {
+            "val": -1,
+            "addFlags": [
+              "woke_kapoor"
+            ],
+            "addClue": "kapoor_awake"
+          }
+        },
+        {
+          "text": "切下冻住的手套和钥匙一起带走",
+          "next": "archive_terminal",
+          "changes": {
+            "val": 4,
+            "addFlags": [
+              "took_core_key"
+            ],
+            "addItem": "core_key"
+          },
+          "effect": "cold"
+        }
+      ]
+    },
+    "archive_terminal": {
+      "title": "旧档案终端",
+      "scene": {
+        "id": "lower_reactor",
+        "name": "反应炉下层",
+        "type": "major",
+        "description": "热管像巨大的肋骨埋在墙里，红色应急灯把每个人的影子拉得很长。"
+      },
+      "progress": 66,
+      "ambient": "wind",
+      "segments": [
+        {
+          "text": "钥匙台旁的旧终端仍在运行。档案标题是：白霜母体供暖共生实验。负责人签名，周泠。"
+        },
+        {
+          "text": "实验目标写得很清楚：让人类在失去太阳后，通过低温共生延长寿命。"
+        }
+      ],
+      "choices": [
+        {
+          "text": "下载完整实验档案",
+          "next": "old_map",
+          "changes": {
+            "val": 2,
+            "addFlags": [
+              "downloaded_archive"
+            ],
+            "addClue": "coexistence_project",
+            "unlockAchievement": "truth_archive"
+          }
+        },
+        {
+          "text": "只复制反应炉控制图，删除实验档案",
+          "next": "old_map",
+          "changes": {
+            "val": -3,
+            "addFlags": [
+              "deleted_archive"
+            ],
+            "addClue": "reactor_control_map"
+          }
+        }
+      ]
+    },
+    "old_map": {
+      "title": "两张地图",
+      "scene": {
+        "id": "lower_reactor",
+        "name": "反应炉下层",
+        "type": "major",
+        "description": "热管像巨大的肋骨埋在墙里，红色应急灯把每个人的影子拉得很长。"
+      },
+      "progress": 68,
+      "ambient": "wind",
+      "segments": [
+        {
+          "text": "控制图上有两条管线。红线把热送回居住环，蓝线把热送入冷却井。"
+        },
+        {
+          "text": "如果只走红线，避难站能活。井下会醒来，饥饿地撞向密封门。如果只走蓝线，井下会安静，居住环会失温。"
+        }
+      ],
+      "choices": [
+        {
+          "text": "把两条管线都标记到腕机",
+          "next": "outside_airlock",
+          "changes": {
+            "val": 1,
+            "addFlags": [
+              "knows_two_pipelines"
+            ],
+            "addClue": "two_pipelines"
+          }
+        },
+        {
+          "text": "优先标记红线，准备救居住环",
+          "next": "generator_room",
+          "changes": {
+            "val": 3,
+            "addFlags": [
+              "redline_priority"
+            ]
+          }
+        }
+      ]
+    },
+    "outside_airlock": {
+      "title": "外部气闸",
+      "scene": {
+        "id": "lower_reactor",
+        "name": "反应炉下层",
+        "type": "major",
+        "description": "热管像巨大的肋骨埋在墙里，红色应急灯把每个人的影子拉得很长。"
+      },
+      "progress": 70,
+      "ambient": "wind",
+      "segments": [
+        {
+          "text": "外部气闸通往风暴里的散热塔。塔顶有旧式短波信标，可以呼叫北方车队，但必须有人出站手动点火。"
+        },
+        {
+          "text": "风暴的声音贴在门外，像有很多指甲在同时抓钢板。"
+        }
+      ],
+      "choices": [
+        {
+          "text": "穿防寒服出站点亮信标",
+          "next": "rescue_beacon",
+          "changes": {
+            "val": -6,
+            "addFlags": [
+              "lit_beacon"
+            ]
+          },
+          "effect": "cold"
+        },
+        {
+          "text": "放弃信标，保留体温去修发电机",
+          "next": "generator_room",
+          "changes": {
+            "val": 3,
+            "addFlags": [
+              "saved_body_heat"
+            ]
+          }
+        }
+      ]
+    },
+    "rescue_beacon": {
+      "title": "风暴信标",
+      "scene": {
+        "id": "storm_tower",
+        "name": "散热塔外侧",
+        "type": "major",
+        "description": "室外白得没有边界，散热塔像一根插在雪原里的黑骨头。"
+      },
+      "progress": 72,
+      "ambient": "wind",
+      "segments": [
+        {
+          "text": "你在风暴里走了二十七步，防寒面罩开始结冰。第十一次呼吸后，你看见雪地里站着许多人影。"
+        },
+        {
+          "text": "他们没有影子，却一起替你挡住风。信标亮起时，你听见苏小禾母亲在你耳边说：别把孩子送下来。"
+        }
+      ],
+      "choices": [
+        {
+          "text": "带着这句话返回下层",
+          "next": "generator_room",
+          "changes": {
+            "val": -3,
+            "addFlags": [
+              "heard_mother_warning"
+            ],
+            "addClue": "do_not_send_children",
+            "unlockAchievement": "storm_beacon"
+          }
+        },
+        {
+          "text": "把信标调成求救和疏散双频",
+          "next": "evacuation_signal",
+          "changes": {
+            "val": -5,
+            "addFlags": [
+              "beacon_evac"
+            ],
+            "addClue": "north_convoy"
+          }
+        }
+      ]
+    },
+    "generator_room": {
+      "title": "辅机室",
+      "scene": {
+        "id": "lower_reactor",
+        "name": "反应炉下层",
+        "type": "major",
+        "description": "热管像巨大的肋骨埋在墙里，红色应急灯把每个人的影子拉得很长。"
+      },
+      "progress": 73,
+      "ambient": "wind",
+      "segments": [
+        {
+          "text": "辅机室里的备用发电机还在转，但燃料阀被冻结。只要让它再撑二十分钟，控制室就能远程打开避难站外门。"
+        },
+        {
+          "text": "燃料阀旁边，霜丝像血管一样包住了阀杆。"
+        }
+      ],
+      "choices": [
+        {
+          "text": "用热芯融开燃料阀",
+          "next": "generator_repair",
+          "changes": {
+            "val": 4,
+            "addFlags": [
+              "used_heat_on_generator"
+            ]
+          }
+        },
+        {
+          "text": "用破冰锤砸开阀杆",
+          "next": "fuel_choice",
+          "changes": {
+            "val": -2,
+            "addFlags": [
+              "hammered_valve"
+            ]
+          },
+          "effect": "shake"
+        }
+      ]
+    },
+    "generator_repair": {
+      "title": "二十分钟",
+      "scene": {
+        "id": "lower_reactor",
+        "name": "反应炉下层",
+        "type": "major",
+        "description": "热管像巨大的肋骨埋在墙里，红色应急灯把每个人的影子拉得很长。"
+      },
+      "progress": 75,
+      "ambient": "wind",
+      "segments": [
+        {
+          "text": "发电机重新提速。控制室发来确认：外门可远程开启，但居住环会损失一半热量。"
+        },
+        {
+          "text": "连岚问：“你是要疏散他们，还是把他们锁在这里等你重启？”",
+          "speaker": "连岚"
+        }
+      ],
+      "choices": [
+        {
+          "text": "准备疏散老人与孩子",
+          "next": "evacuation_signal",
+          "changes": {
+            "val": 1,
+            "addFlags": [
+              "prepared_evacuation"
+            ],
+            "relationship": {
+              "station": 2
+            }
+          }
+        },
+        {
+          "text": "保持封闭，所有热量留给核心重启",
+          "next": "fuel_choice",
+          "changes": {
+            "val": 5,
+            "addFlags": [
+              "kept_station_sealed"
+            ],
+            "relationship": {
+              "station": -2
+            }
+          }
+        }
+      ]
+    },
+    "fuel_choice": {
+      "title": "燃料阀后的手",
+      "scene": {
+        "id": "lower_reactor",
+        "name": "反应炉下层",
+        "type": "major",
+        "description": "热管像巨大的肋骨埋在墙里，红色应急灯把每个人的影子拉得很长。"
+      },
+      "progress": 77,
+      "ambient": "wind",
+      "segments": [
+        {
+          "text": "阀杆被你转开时，墙内伸出一只霜白的手。它没有抓你，只把一枚生锈的站长徽章放进你掌心。"
+        },
+        {
+          "text": "徽章背面刻着：第一批冻死者，不得进入炉心。"
+        }
+      ],
+      "choices": [
+        {
+          "text": "收起站长徽章",
+          "next": "nursery_core",
+          "changes": {
+            "val": 2,
+            "addFlags": [
+              "has_station_badge"
+            ],
+            "addClue": "first_dead_ban",
+            "addItem": "station_badge"
+          }
+        },
+        {
+          "text": "把徽章交给连岚，请她决定是否继续",
+          "next": "nursery_core",
+          "changes": {
+            "val": -1,
+            "addFlags": [
+              "lian_has_badge"
+            ],
+            "relationship": {
+              "lian": 2
+            }
+          }
+        }
+      ]
+    },
+    "nursery_core": {
+      "title": "霜巢育室",
+      "scene": {
+        "id": "frost_nursery",
+        "name": "霜巢育室",
+        "type": "major",
+        "description": "旧冷库被改成隔离区，玻璃后面漂着细小的白色孢丝，像一场不会落地的雪。"
+      },
+      "progress": 80,
+      "ambient": "cold",
+      "segments": [
+        {
+          "text": "你们终于抵达冷库改造的育室。玻璃后面不是怪物巢穴，而是一排排保温舱。每个舱里都有一个被霜丝包住的人。"
+        },
+        {
+          "text": "苏小禾的母亲站在最里面，胸口开着白色花纹。她看见你，第一句话是：炉子快死了，孩子会冷。"
+        }
+      ],
+      "chapterTitle": "第五章：霜巢育室",
+      "choices": [
+        {
+          "text": "告诉她苏小禾还活着",
+          "next": "glass_children",
+          "changes": {
+            "val": -2,
+            "addFlags": [
+              "told_mother_xiaohe"
+            ],
+            "relationship": {
+              "mother": 2
+            },
+            "unlockAchievement": "white_mother"
+          }
+        },
+        {
+          "text": "要求她交出巡检队和失踪孩子",
+          "next": "mother_white",
+          "changes": {
+            "val": 2,
+            "addFlags": [
+              "demanded_people"
+            ],
+            "relationship": {
+              "mother": -1
+            },
+            "unlockAchievement": "white_mother"
+          }
+        }
+      ]
+    },
+    "glass_children": {
+      "title": "玻璃上的小手",
+      "scene": {
+        "id": "frost_nursery",
+        "name": "霜巢育室",
+        "type": "major",
+        "description": "旧冷库被改成隔离区，玻璃后面漂着细小的白色孢丝，像一场不会落地的雪。"
+      },
+      "progress": 82,
+      "ambient": "wind",
+      "segments": [
+        {
+          "text": "听见苏小禾的名字，玻璃后面所有孢丝同时收缩。几个孩子从雾里显出轮廓，隔着玻璃把手贴上来。"
+        },
+        {
+          "text": "他们没有被吃掉。他们被母体藏在最暖的一层霜里，等着上面的人承认他们还活着。"
+        }
+      ],
+      "choices": [
+        {
+          "text": "承诺打开育室，把孩子带回居住环",
+          "next": "heat_equation",
+          "changes": {
+            "val": -3,
+            "addFlags": [
+              "promised_children"
+            ],
+            "relationship": {
+              "mother": 2
+            }
+          }
+        },
+        {
+          "text": "只要求先释放巡检队，孩子稍后处理",
+          "next": "mother_white",
+          "changes": {
+            "val": 1,
+            "addFlags": [
+              "prioritized_team"
+            ],
+            "relationship": {
+              "mother": -2
+            }
+          }
+        }
+      ]
+    },
+    "mother_white": {
+      "title": "白母",
+      "scene": {
+        "id": "frost_nursery",
+        "name": "霜巢育室",
+        "type": "major",
+        "description": "旧冷库被改成隔离区，玻璃后面漂着细小的白色孢丝，像一场不会落地的雪。"
+      },
+      "progress": 84,
+      "ambient": "wind",
+      "segments": [
+        {
+          "text": "苏小禾的母亲摇头。她身后的霜丝组成许多人的脸，有老人，有孩子，也有连岚妹妹。"
+        },
+        {
+          "text": "“我们没有夺走他们。”她说，“是上面的人先把冷交给我们。现在你们要热，我们也要。”",
+          "speaker": "白母"
+        }
+      ],
+      "choices": [
+        {
+          "text": "让连岚确认妹妹的身份",
+          "next": "save_lian",
+          "changes": {
+            "val": -2,
+            "addFlags": [
+              "let_lian_confirm"
+            ],
+            "relationship": {
+              "lian": 2
+            }
+          }
+        },
+        {
+          "text": "拒绝谈判，准备焚毁育室",
+          "next": "purge_preparation",
+          "changes": {
+            "val": 5,
+            "addFlags": [
+              "refused_mother"
+            ]
+          },
+          "effect": "flash"
+        }
+      ]
+    },
+    "heat_equation": {
+      "title": "热量方程",
+      "scene": {
+        "id": "frost_nursery",
+        "name": "霜巢育室",
+        "type": "major",
+        "description": "旧冷库被改成隔离区，玻璃后面漂着细小的白色孢丝，像一场不会落地的雪。"
+      },
+      "progress": 86,
+      "ambient": "wind",
+      "segments": [
+        {
+          "text": "白母给你看她的条件：一半热量给居住环，一半热量给冷却井。她会让孩子回去，也会让井下的死者继续睡。"
+        },
+        {
+          "text": "周泠在通讯里沉默很久，最后说：“理论上可行。代价是供暖效率下降，整个冬季都不会暖，只能不死。”",
+          "speaker": "周泠"
+        }
+      ],
+      "choices": [
+        {
+          "text": "接受共生方案，准备双线供热",
+          "next": "trial_choice",
+          "changes": {
+            "val": -2,
+            "addFlags": [
+              "considered_coexistence"
+            ],
+            "relationship": {
+              "mother": 2,
+              "zhou": 1
+            }
+          }
+        },
+        {
+          "text": "拒绝牺牲热量，回到核心执行人类优先",
+          "next": "main_core",
+          "changes": {
+            "val": 4,
+            "addFlags": [
+              "human_priority"
+            ]
+          }
+        }
+      ]
+    },
+    "trial_choice": {
+      "title": "试运行",
+      "scene": {
+        "id": "frost_nursery",
+        "name": "霜巢育室",
+        "type": "major",
+        "description": "旧冷库被改成隔离区，玻璃后面漂着细小的白色孢丝，像一场不会落地的雪。"
+      },
+      "progress": 88,
+      "ambient": "wind",
+      "segments": [
+        {
+          "text": "试运行需要有人进入核心井，手动把蓝线阀门保持在半开。阀门会在三分钟内冻结，进去的人很难回来。"
+        },
+        {
+          "text": "连岚看着玻璃后的妹妹，又看向你。周泠说她可以去。白母说她也可以替你们保住一个人。"
+        }
+      ],
+      "choices": [
+        {
+          "text": "自己进入核心井",
+          "next": "main_core",
+          "changes": {
+            "val": 3,
+            "addFlags": [
+              "player_volunteer"
+            ],
+            "importantFlag": {
+              "flag": "player_volunteer",
+              "label": "你决定亲自进核心井"
+            }
+          }
+        },
+        {
+          "text": "接受周泠进入核心井",
+          "next": "main_core",
+          "changes": {
+            "val": 1,
+            "addFlags": [
+              "zhou_volunteer"
+            ],
+            "importantFlag": {
+              "flag": "zhou_volunteer",
+              "label": "周泠进入核心井"
+            },
+            "relationship": {
+              "zhou": 3
+            }
+          }
+        },
+        {
+          "text": "允许连岚代替你进入核心井",
+          "next": "sacrifice_lian",
+          "changes": {
+            "val": 2,
+            "addFlags": [
+              "lian_steps_forward"
+            ],
+            "relationship": {
+              "lian": 2
+            }
+          }
+        },
+        {
+          "text": "让连岚留下陪妹妹，拒绝让她牺牲",
+          "next": "main_core",
+          "changes": {
+            "val": -1,
+            "addFlags": [
+              "saved_lian"
+            ],
+            "relationship": {
+              "lian": 3
+            }
+          }
+        }
+      ]
+    },
+    "save_lian": {
+      "title": "妹妹",
+      "scene": {
+        "id": "frost_nursery",
+        "name": "霜巢育室",
+        "type": "major",
+        "description": "旧冷库被改成隔离区，玻璃后面漂着细小的白色孢丝，像一场不会落地的雪。"
+      },
+      "progress": 89,
+      "ambient": "wind",
+      "segments": [
+        {
+          "text": "连岚的妹妹从霜丝里睁开眼。她没有扑向姐姐，只问了一句：“上面还有热汤吗？”"
+        },
+        {
+          "text": "连岚放下枪。那一刻，你知道她不会再支持焚毁育室，除非白母先伤害活人。"
+        }
+      ],
+      "choices": [
+        {
+          "text": "让姐妹短暂交谈，争取白母信任",
+          "next": "heat_equation",
+          "changes": {
+            "val": -2,
+            "addFlags": [
+              "lian_sister_talk"
+            ],
+            "relationship": {
+              "lian": 3,
+              "mother": 1
+            }
+          }
+        },
+        {
+          "text": "打断交谈，要求白母立即释放所有人",
+          "next": "purge_preparation",
+          "changes": {
+            "val": 3,
+            "addFlags": [
+              "broke_reunion"
+            ],
+            "relationship": {
+              "lian": -3
+            }
+          }
+        }
+      ]
+    },
+    "sacrifice_lian": {
+      "title": "警卫的选择",
+      "scene": {
+        "id": "frost_nursery",
+        "name": "霜巢育室",
+        "type": "major",
+        "description": "旧冷库被改成隔离区，玻璃后面漂着细小的白色孢丝，像一场不会落地的雪。"
+      },
+      "progress": 90,
+      "ambient": "wind",
+      "segments": [
+        {
+          "text": "连岚把自己的身份牌塞给你。“如果我没回来，把这个给我妹妹。告诉她我没有朝她开枪。”",
+          "speaker": "连岚"
+        },
+        {
+          "text": "她走向核心井，没有回头。"
+        }
+      ],
+      "choices": [
+        {
+          "text": "带着连岚的身份牌去核心",
+          "next": "main_core",
+          "changes": {
+            "val": 2,
+            "addFlags": [
+              "lian_sacrificed"
+            ],
+            "addItem": "lian_badge",
+            "relationship": {
+              "lian": 5
+            }
+          }
+        }
+      ]
+    },
+    "main_core": {
+      "title": "供暖核心",
+      "scene": {
+        "id": "core_chamber",
+        "name": "供暖核心",
+        "type": "major",
+        "description": "反应炉心悬在黑井上方，最后的热光被霜雾啃成一圈暗红。"
+      },
+      "progress": 92,
+      "ambient": "heat",
+      "segments": [
+        {
+          "text": "核心井里热浪和寒雾交替翻滚。控制台给出四个可执行方案：单线重启、双线共生、全站疏散、热焚清除。"
+        },
+        {
+          "text": "每个方案都能让一部分人活下去。没有一个方案干净。"
+        }
+      ],
+      "chapterTitle": "第六章：核心没有仁慈",
+      "choices": [
+        {
+          "text": "执行单线重启，只向居住环供热",
+          "next": "manual_restart",
+          "changes": {
+            "val": 5,
+            "addFlags": [
+              "single_line_restart"
+            ],
+            "importantFlag": {
+              "flag": "single_line_restart",
+              "label": "你选择人类优先供热"
+            }
+          }
+        },
+        {
+          "text": "执行双线共生，让居住环和冷却井共享热量",
+          "next": "manual_restart",
+          "changes": {
+            "val": -2,
+            "addFlags": [
+              "dual_line_heat"
+            ],
+            "importantFlag": {
+              "flag": "dual_line_heat",
+              "label": "你选择双线共生"
+            }
+          }
+        },
+        {
+          "text": "执行热焚清除，烧掉育室和冷却井",
+          "next": "purge_preparation",
+          "changes": {
+            "val": 6,
+            "addFlags": [
+              "purge_plan"
+            ],
+            "importantFlag": {
+              "flag": "purge_plan",
+              "label": "你选择热焚清除"
+            }
+          }
+        },
+        {
+          "text": "启动疏散，把避难站交给风暴",
+          "next": "evacuation_signal",
+          "changes": {
+            "val": -4,
+            "addFlags": [
+              "evac_plan"
+            ],
+            "importantFlag": {
+              "flag": "evac_plan",
+              "label": "你选择全站疏散"
+            }
+          }
+        }
+      ]
+    },
+    "purge_preparation": {
+      "title": "热焚倒计时",
+      "scene": {
+        "id": "core_chamber",
+        "name": "供暖核心",
+        "type": "major",
+        "description": "反应炉心悬在黑井上方，最后的热光被霜雾啃成一圈暗红。"
+      },
+      "progress": 94,
+      "ambient": "wind",
+      "segments": [
+        {
+          "text": "热焚程序需要三十秒预热。育室方向传来孩子们的哭声，也可能只是白霜学会了哭声。"
+        },
+        {
+          "text": "周泠在频道里喊：“如果你按下去，霜丝会死，孩子也会死。你确定他们已经不是人了吗？”",
+          "speaker": "周泠"
+        }
+      ],
+      "choices": [
+        {
+          "text": "取消热焚，改回核心控制台",
+          "next": "main_core",
+          "changes": {
+            "val": -3,
+            "addFlags": [
+              "cancelled_purge"
+            ],
+            "relationship": {
+              "zhou": 2
+            }
+          }
+        },
+        {
+          "text": "继续热焚，阻止任何白霜上行",
+          "next": "manual_restart",
+          "changes": {
+            "val": 5,
+            "addFlags": [
+              "confirmed_purge"
+            ]
+          },
+          "effect": "flash"
+        }
+      ]
+    },
+    "evacuation_signal": {
+      "title": "疏散信号",
+      "scene": {
+        "id": "core_chamber",
+        "name": "供暖核心",
+        "type": "major",
+        "description": "反应炉心悬在黑井上方，最后的热光被霜雾啃成一圈暗红。"
+      },
+      "progress": 95,
+      "ambient": "wind",
+      "segments": [
+        {
+          "text": "外门开启指令发出，居住环的广播开始重复：带上热毯，沿北侧坡道撤离。"
+        },
+        {
+          "text": "控制室回传画面里，老人和孩子排成队走进风暴。北方车队的灯还在很远的地方。"
+        }
+      ],
+      "choices": [
+        {
+          "text": "维持疏散，关闭核心井封门",
+          "next": "final_route",
+          "changes": {
+            "val": -2,
+            "addFlags": [
+              "evacuation_active"
+            ]
+          }
+        },
+        {
+          "text": "疏散到一半后反悔，保留部分热量重启核心",
+          "next": "manual_restart",
+          "changes": {
+            "val": 2,
+            "addFlags": [
+              "partial_evacuation"
+            ]
+          }
+        }
+      ]
+    },
+    "manual_restart": {
+      "title": "手动重启",
+      "scene": {
+        "id": "core_chamber",
+        "name": "供暖核心",
+        "type": "major",
+        "description": "反应炉心悬在黑井上方，最后的热光被霜雾啃成一圈暗红。"
+      },
+      "progress": 96,
+      "ambient": "wind",
+      "segments": [
+        {
+          "text": "你把主管钥匙插进控制台。第二个插槽亮起，如果没有巡检队长钥匙，系统会要求活体授权。"
+        },
+        {
+          "text": "核心深处传来很多人的声音，重叠着问你：这次轮到谁取暖？"
+        }
+      ],
+      "choices": [
+        {
+          "text": "插入巡检队长钥匙并执行方案",
+          "next": "final_route",
+          "changes": {
+            "val": 2,
+            "addFlags": [
+              "used_core_key"
+            ]
+          }
+        },
+        {
+          "text": "用自己的生命体征替代第二授权",
+          "next": "final_route",
+          "changes": {
+            "val": -6,
+            "addFlags": [
+              "used_self_authorization"
+            ],
+            "importantFlag": {
+              "flag": "self_authorized",
+              "label": "你用自己的生命体征授权"
+            }
+          }
+        }
+      ]
+    },
+    "final_route": {
+      "title": "黎明前的判定",
+      "scene": {
+        "id": "core_chamber",
+        "name": "供暖核心",
+        "type": "major",
+        "description": "反应炉心悬在黑井上方，最后的热光被霜雾啃成一圈暗红。"
+      },
+      "progress": 98,
+      "ambient": "static",
+      "segments": [
+        {
+          "text": "核心开始升温。居住环、育室、冷却井、风暴外门，所有线路同时请求最后确认。"
+        },
+        {
+          "text": "你看见自己的呼吸在控制台前结成白霜。它短暂停留，像一行等待签名的判决。"
+        }
+      ],
+      "routes": [
+        {
+          "condition": "hasFlag 'confirmed_purge'",
+          "next": "ending_pyre"
+        },
+        {
+          "condition": "hasFlag 'dual_line_heat'",
+          "next": "ending_coexistence"
+        },
+        {
+          "condition": "hasFlag 'evacuation_active'",
+          "next": "ending_exile"
+        },
+        {
+          "condition": {
+            "all": [
+              {
+                "flag": "single_line_restart"
+              },
+              {
+                "var": "val",
+                "op": ">=",
+                "value": 62
+              }
+            ]
+          },
+          "next": "ending_dawn"
+        },
+        {
+          "condition": "hasFlag 'used_self_authorization'",
+          "next": "ending_core_sleeper"
+        },
+        {
+          "condition": "default",
+          "next": "ending_white_city"
+        }
+      ]
+    },
+    "ending_dawn": {
+      "isEnding": true,
+      "title": "结局：寒潮后的第一盏灯",
+      "type": "TRUE ENDING",
+      "progress": 100,
+      "ambient": "heat",
+      "achievement": "ending_dawn",
+      "description": "单线重启成功。居住环在黎明前恢复供暖，三千名避难者活了下来。下层冷却井被重新封死，井里持续传来敲击声，直到第十三天才停止。",
+      "closing": "你救下了活着的人，也把另一群学会呼吸的死者继续留在冬天里。春天若还会来，它必须先经过你的签名。"
+    },
+    "ending_coexistence": {
+      "isEnding": true,
+      "title": "结局：半暖冬眠",
+      "type": "HIDDEN ENDING",
+      "progress": 100,
+      "ambient": "cold",
+      "achievement": "ending_coexistence",
+      "description": "双线供热让居住环和冷却井同时稳定。避难站从此再也没有真正暖过，但也没有人在夜里冻死。孩子们陆续醒来，部分第一批冻死者保留了名字和记忆。",
+      "closing": "人类没有战胜极寒，只是学会和冬天同住一间屋子。每晚九点，你仍要亲自确认蓝线阀门没有开得太大。"
+    },
+    "ending_pyre": {
+      "isEnding": true,
+      "title": "结局：白焰清除",
+      "type": "BRANCH ENDING",
+      "progress": 100,
+      "ambient": "blood",
+      "achievement": "ending_pyre",
+      "description": "热焚程序烧穿育室和冷却井。霜丝、白母、孩子和巡检队全部化成蒸汽。居住环得到完整供暖，官方记录称下层污染源已清除。",
+      "closing": "避难站活了下来，却再没有人敢给孩子讲春天。因为他们知道，有些哭声不是假的，只是被你判定为不够像人。"
+    },
+    "ending_exile": {
+      "isEnding": true,
+      "title": "结局：北方灯队",
+      "type": "NORMAL ENDING",
+      "progress": 100,
+      "ambient": "wind",
+      "achievement": "ending_exile",
+      "description": "疏散队伍进入风暴。北方车队在两个小时后接走一千九百人，剩下的人留在雪线后。十七号避难站被白霜吞没，反应炉在无人操作中熄灭。",
+      "closing": "你带出了一部分活人，也把一座城留给极寒。后来每当车队经过旧址，短波里都会响起儿童合唱般的启动手册。"
+    },
+    "ending_core_sleeper": {
+      "isEnding": true,
+      "title": "结局：核心守夜人",
+      "type": "SPECIAL ENDING",
+      "progress": 100,
+      "ambient": "static",
+      "achievement": "ending_core_sleeper",
+      "description": "你用自己的生命体征完成授权，核心接受了你。供暖恢复，育室封闭，冷却井安静。你的身体留在控制台旁，体温长期维持在不可能的三十七度。",
+      "closing": "十七号避难站的人说，供暖主管没有死，只是睡在炉心里。每当温度下降，广播里都会响起你的声音，提醒他们关好门。"
+    },
+    "ending_white_city": {
+      "isEnding": true,
+      "title": "结局：白城上行",
+      "type": "BAD ENDING",
+      "progress": 100,
+      "ambient": "cold",
+      "achievement": "ending_white_city",
+      "description": "核心重启失败，密封门在温差中变形。井下的白霜沿热管上行，先经过医务室，再经过儿童区，最后抵达控制室。避难站没有立刻死亡，它变得很安静。",
+      "closing": "第七天，北方车队收到十七号避难站的求救信号。信号里有三千个人的声音，同时说这里很暖。"
+    }
+  }
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Interactive Story Builder"
+  short_description: "Generate clear, themeable branching story games."
+  default_prompt: "Turn this story idea or source text into a readable, playable branching narrative game with clear stakes, sufficient length, and a matching visual/theme plan."
